@@ -1,27 +1,27 @@
-class Peekable {
-  constructor(iterator) {
-    this.iterator = iterator[Symbol.iterator]()
-    this.peekedItem = null
-    this.peeked = false
+export default class Peekable<T> {
+  iterator: Iterator<T>;
+  peekedItem: IteratorResult<T> | null = null;
+  peeked = false;
+
+  constructor(iterator: Iterable<T>) {
+    this.iterator = iterator[Symbol.iterator]();
   }
 
   next() {
-    let next = this.peeked ? this.peekedItem : this.iterator.next()
+    const next = this.peeked ? this.peekedItem : this.iterator.next();
 
-    this.peekedItem = null
-    this.peeked = false
+    this.peekedItem = null;
+    this.peeked = false;
 
-    return next
+    return next;
   }
 
   peek() {
     if (!this.peeked) {
-      this.peekedItem = this.iterator.next()
-      this.peeked = true
+      this.peekedItem = this.iterator.next();
+      this.peeked = true;
     }
 
-    return this.peekedItem
+    return this.peekedItem;
   }
 }
-
-module.exports = Peekable

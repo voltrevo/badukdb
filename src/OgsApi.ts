@@ -18,6 +18,20 @@ class OgsApi {
     this.origin = originURL.origin;
   }
 
+  async getString(path: string): Promise<string | null> {
+    assert(path[0] === "/");
+
+    const response = await fetch(`${this.origin}${path}`);
+
+    if (response.status === HttpStatus.NotFound) {
+      return null;
+    }
+
+    assert(response.status === HttpStatus.OK, "Expected HTTP OK");
+
+    return await response.text();
+  }
+
   async get<T>(path: string, type: tb.Bicoder<T>): Promise<T> {
     assert(path[0] === "/");
 
@@ -55,6 +69,10 @@ class OgsApi {
 
   async *Games(playerId: number): AsyncGenerator<OgsApi.Game> {
     yield* this.getPaginated(`/v1/players/${playerId}/games/`, OgsApi.Game);
+  }
+
+  async Sgf(gameId: number): Promise<string | null> {
+    return await this.getString(`/v1/games/${gameId}/sgf/`);
   }
 }
 

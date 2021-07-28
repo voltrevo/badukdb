@@ -1,8 +1,10 @@
 import { HttpStatus, tb } from "../deps.ts";
+import FetchWith429Retries from "./FetchWith429Retries.ts";
 import assert from "./helpers/assert.ts";
 
 class OgsApi {
   origin: string;
+  fetch = FetchWith429Retries(1000, 3, 81000);
 
   constructor(origin: string) {
     const originURL = new URL(origin);
@@ -21,10 +23,15 @@ class OgsApi {
   async getString(path: string): Promise<string | null> {
     assert(path[0] === "/");
 
-    const response = await fetch(`${this.origin}${path}`);
+    const response = await this.fetch(`${this.origin}${path}`);
 
     if (response.status === HttpStatus.NotFound) {
       return null;
+    }
+
+    if (response.status !== HttpStatus.OK) {
+      console.log(response.status, await response.text());
+      assert(false, "Expected HTTP OK");
     }
 
     assert(response.status === HttpStatus.OK, "Expected HTTP OK");
@@ -33,9 +40,13 @@ class OgsApi {
   }
 
   async get<T>(path: string, type: tb.Bicoder<T>): Promise<T> {
+    if (path.startsWith(this.origin)) {
+      path = path.slice(this.origin.length);
+    }
+
     assert(path[0] === "/");
 
-    const response = await fetch(`${this.origin}${path}`);
+    const response = await this.fetch(`${this.origin}${path}`);
     assert(response.status === HttpStatus.OK, "Expected HTTP OK");
 
     const contentType = response.headers.get("content-type") ?? "";

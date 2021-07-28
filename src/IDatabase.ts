@@ -1,23 +1,6 @@
-import { createHash } from "../deps.ts";
-
+import Hash from "./Hash.ts";
+import Id from "./Id.ts";
 import Nominal from "./Nominal.ts";
-
-const Id = Nominal("Id")<Uint8Array>();
-type Id = ReturnType<typeof Id>;
-
-function Hash(data: Uint8Array) {
-  return Nominal("Hash")()(
-    new Uint8Array(
-      createHash("keccak256").update(data).digest(),
-    ),
-  );
-}
-
-type Hash = ReturnType<typeof Hash>;
-
-function RandomId() {
-  return Id(crypto.getRandomValues(new Uint8Array(32)));
-}
 
 const GameId = Nominal("GameId")<Id>();
 type GameId = ReturnType<typeof GameId>;

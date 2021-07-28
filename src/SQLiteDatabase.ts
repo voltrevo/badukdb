@@ -24,7 +24,9 @@ function createTablesIfNotExisting(db: sqlite.DB) {
       startBoard BLOB NOT NULL,
       result REAL NOT NULL
     );
+  `);
 
+  db.query(`
     CREATE TABLE IF NOT EXISTS boards (
       hash BLOB PRIMARY KEY,
       colorToPlay INTEGER NOT NULL,
@@ -33,7 +35,9 @@ function createTablesIfNotExisting(db: sqlite.DB) {
       height INTEGER NOT NULL,
       content BLOB NOT NULL
     );
+  `);
 
+  db.query(`
     CREATE TABLE IF NOT EXISTS moves (
       game BLOB NOT NULL,
       number INTEGER NOT NULL,
@@ -43,9 +47,13 @@ function createTablesIfNotExisting(db: sqlite.DB) {
       gameResult REAL NOT NULL,
       PRIMARY KEY (game, number)
     );
+  `);
 
+  db.query(`
     CREATE UNIQUE INDEX IF NOT EXISTS idx_moves_board ON moves (board);
+  `);
 
+  db.query(`
     CREATE TABLE IF NOT EXISTS players (
       id BLOB PRIMARY KEY
     );

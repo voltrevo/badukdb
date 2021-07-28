@@ -41,6 +41,8 @@ function createTablesIfNotExisting(db: sqlite.DB) {
       PRIMARY KEY (game, number)
     );
 
+    CREATE UNIQUE INDEX IF NOT EXISTS idx_moves_board ON moves (board);
+
     CREATE TABLE IF NOT EXISTS players (
       id BLOB PRIMARY KEY
     );
@@ -49,15 +51,61 @@ function createTablesIfNotExisting(db: sqlite.DB) {
 
 function Queries(db: sqlite.DB) {
   return {
-    insertGame: db.prepareQuery(""),
-    lookupGame: db.prepareQuery(""),
-    insertBoard: db.prepareQuery(""),
-    lookupBoard: db.prepareQuery(""),
-    insertMove: db.prepareQuery(""),
-    lookupMove: db.prepareQuery(""),
-    insertPlayer: db.prepareQuery(""),
-    lookupPlayer: db.prepareQuery(""),
-    findMoves: db.prepareQuery(""),
+    insertGame: db.prepareQuery(`
+      INSERT INTO games (
+        id, black, white, startBoard, result
+      ) VALUES (
+        :id, :black, :white, :startBoard, :result
+      )
+    `),
+
+    lookupGame: db.prepareQuery(`
+      SELECT * FROM games WHERE id = :id LIMIT 1
+    `),
+
+    insertBoard: db.prepareQuery(`
+      INSERT INTO boards (
+        hash, colorToPlay, offboardPoints, width, height, content
+      ) VALUES (
+        :hash, :colorToPlay, :offboardPoints, :width, :height, :content
+      )
+    `),
+
+    lookupBoard: db.prepareQuery(`
+      SELECT * FROM boards WHERE hash = :hash LIMIT 1
+    `),
+
+    insertMove: db.prepareQuery(`
+      INSERT INTO moves (
+        game, number, board, location, player, gameResult
+      ) VALUES (
+        :game, :number, :board, :location, :player, :gameResult
+      )
+    `),
+
+    lookupMove: db.prepareQuery(`
+      SELECT * from moves
+      WHERE
+        game = :game AND
+        number = :number
+      LIMIT 1
+    `),
+
+    insertPlayer: db.prepareQuery(`
+      INSERT INTO players (
+        id
+      ) VALUES (
+        :id
+      )
+    `),
+
+    lookupPlayer: db.prepareQuery(`
+      SELECT * from players WHERE id = :id LIMIT 1
+    `),
+
+    findMoves: db.prepareQuery(`
+      #
+    `),
   };
 }
 

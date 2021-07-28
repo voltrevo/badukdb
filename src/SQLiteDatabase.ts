@@ -5,11 +5,14 @@ import {
   BoardHash,
   Game,
   GameId,
+  Location,
   Move,
   Player,
   PlayerId,
 } from "./entities.ts";
 
+import { constructHash } from "./Hash.ts";
+import Id from "./Id.ts";
 import IDatabase from "./IDatabase.ts";
 
 function createTablesIfNotExisting(db: sqlite.DB) {
@@ -104,7 +107,7 @@ function Queries(db: sqlite.DB) {
     `),
 
     findMoves: db.prepareQuery(`
-      #
+      SELECT * from moves WHERE board = :board
     `),
   };
 }
@@ -119,39 +122,139 @@ export default class SQLiteDatabase implements IDatabase {
     this.queries = Queries(this.db);
   }
 
-  insertGame(game: Game): Promise<void> {
-    throw new Error("Method not implemented.");
+  async insertGame(game: Game): Promise<void> {
+    await Promise.resolve();
+
+    this.queries.insertGame({
+      ":id": game.id.value.value,
+      ":black": game.black.value.value,
+      ":white": game.white.value.value,
+      ":startBoard": game.startBoard.value.value,
+      ":result": game.result,
+    });
   }
 
-  lookupGame(id: GameId): Promise<Game | null> {
-    throw new Error("Method not implemented.");
+  async lookupGame(id: GameId): Promise<Game | null> {
+    await Promise.resolve();
+
+    const [row] = this.queries.lookupGame({ ":id": id.value.value });
+
+    if (row === undefined) {
+      return null;
+    }
+
+    return {
+      id: GameId(Id(row[0])),
+      black: PlayerId(Id(row[1])),
+      white: PlayerId(Id(row[2])),
+      startBoard: BoardHash(constructHash(row[3])),
+      result: row[4],
+    };
   }
 
-  insertBoard(board: Board): Promise<void> {
-    throw new Error("Method not implemented.");
+  async insertBoard(board: Board): Promise<void> {
+    await Promise.resolve();
+
+    this.queries.insertBoard({
+      ":hash": board.hash.value.value,
+      ":colorToPlay": board.colorToPlay === "black" ? 0 : 1,
+      ":offboardPoints": board.offboardPoints,
+      ":width": board.width,
+      ":height": board.height,
+      ":content": board.content,
+    });
   }
 
-  lookupBoard(hash: BoardHash): Promise<Board | null> {
-    throw new Error("Method not implemented.");
+  async lookupBoard(hash: BoardHash): Promise<Board | null> {
+    await Promise.resolve();
+
+    const [row] = this.queries.lookupBoard({ ":hash": hash.value.value });
+
+    if (row === undefined) {
+      return null;
+    }
+
+    return {
+      hash: BoardHash(constructHash(row[0])),
+      colorToPlay: row[1] === 0 ? "black" : "white",
+      offboardPoints: row[2],
+      width: row[3],
+      height: row[4],
+      content: row[5],
+    };
   }
 
-  insertMove(move: Move): Promise<void> {
-    throw new Error("Method not implemented.");
+  async insertMove(move: Move): Promise<void> {
+    await Promise.resolve();
+
+    this.queries.insertMove({
+      ":game": move.game.value.value,
+      ":number": move.number,
+      ":board": move.board.value.value,
+      ":location": move.location.value,
+      ":player": move.player.value.value,
+      ":gameResult": move.gameResult,
+    });
   }
 
-  lookupMove(game: GameId, number: number): Promise<Move | null> {
-    throw new Error("Method not implemented.");
+  async lookupMove(game: GameId, number: number): Promise<Move | null> {
+    await Promise.resolve();
+
+    const [row] = this.queries.lookupMove({
+      ":game": game.value.value,
+      ":number": number,
+    });
+
+    if (row === undefined) {
+      return null;
+    }
+
+    return {
+      game: GameId(Id(row[0])),
+      number: row[1],
+      board: BoardHash(constructHash(row[2])),
+      location: Location(row[3]),
+      player: PlayerId(Id(row[4])),
+      gameResult: row[5],
+    };
   }
 
-  insertPlayer(player: Player): Promise<void> {
-    throw new Error("Method not implemented.");
+  async insertPlayer(player: Player): Promise<void> {
+    await Promise.resolve();
+
+    this.queries.insertPlayer({
+      ":id": player.id.value.value,
+    });
   }
 
-  lookupPlayer(id: PlayerId): Promise<Player | null> {
-    throw new Error("Method not implemented.");
+  async lookupPlayer(id: PlayerId): Promise<Player | null> {
+    await Promise.resolve();
+
+    const [row] = this.queries.lookupPlayer({ ":id": id.value.value });
+
+    if (row === undefined) {
+      return null;
+    }
+
+    return {
+      id: PlayerId(Id(row[0])),
+    };
   }
 
-  findMoves(board: BoardHash): Promise<Move[]> {
-    throw new Error("Method not implemented.");
+  async *findMoves(board: BoardHash) {
+    await Promise.resolve();
+
+    const rows = this.queries.findMoves({ ":board": board.value.value });
+
+    for (const row of rows) {
+      yield {
+        game: GameId(Id(row[0])),
+        number: row[1],
+        board: BoardHash(constructHash(row[2])),
+        location: Location(row[3]),
+        player: PlayerId(Id(row[4])),
+        gameResult: row[5],
+      };
+    }
   }
 }

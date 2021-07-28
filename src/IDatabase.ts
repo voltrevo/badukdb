@@ -21,7 +21,7 @@ type IDatabase = {
   insertPlayer(player: Player): Promise<void>;
   lookupPlayer(id: PlayerId): Promise<Player | null>;
 
-  findMoves(board: BoardHash): Promise<Move[]>;
+  findMoves(board: BoardHash): AsyncIterator<Move>;
 };
 
 export default IDatabase;

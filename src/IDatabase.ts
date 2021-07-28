@@ -47,6 +47,20 @@ export type Player = {
   // TODO: name, etc
 };
 
-type IDatabase = {};
+type IDatabase = {
+  insertGame(game: Game): Promise<void>;
+  lookupGame(id: GameId): Promise<Game | null>;
+
+  insertBoard(board: Board): Promise<void>;
+  lookupBoard(hash: BoardHash): Promise<Board | null>;
+
+  insertMove(move: Move): Promise<void>;
+  lookupMove(game: GameId, number: number): Promise<Move | null>;
+
+  insertPlayer(player: Player): Promise<void>;
+  lookupPlayer(id: PlayerId): Promise<Player | null>;
+
+  findMoves(board: BoardHash): Promise<Move[]>;
+};
 
 export default IDatabase;

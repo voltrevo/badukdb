@@ -8,5 +8,8 @@
   "deno.lint": true,
   "deno.unstable": true,
   "editor.formatOnSave": true,
-  "editor.defaultFormatter": "denoland.vscode-deno"
+  "editor.defaultFormatter": "denoland.vscode-deno",
+  "deno.suggest.imports.hosts": {
+    "https://cdn.skypack.dev": false
+  }
 }

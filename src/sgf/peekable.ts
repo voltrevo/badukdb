@@ -1,6 +1,6 @@
 export default class Peekable<T> {
-  iterator: Iterator<T>;
-  peekedItem: IteratorResult<T> | null = null;
+  iterator: Iterator<T, undefined, undefined>;
+  peekedItem: IteratorResult<T, undefined> | null = null;
   peeked = false;
 
   constructor(iterator: Iterable<T>) {

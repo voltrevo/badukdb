@@ -1,80 +1,83 @@
-const fs = require('fs')
+import Peekable from "./peekable.ts";
+import { Token, tokenizeIter } from "./tokenize.ts";
+import { unescapeString } from "./helper.ts";
 
-const Peekable = require('./peekable')
-const {tokenizeIter, tokenizeBufferIter} = require('./tokenize')
-const {unescapeString} = require('./helper')
+type Node = {
+  id: number | null;
+  data: Record<string, string[]>;
+  parentId: number | null;
+  children: Node[];
+};
 
-function _parseTokens(peekableTokens, parentId, options) {
-  let {getId, dictionary, onProgress, onNodeCreated} = options
+function _parseTokens(
+  peekableTokens: Peekable<Token>,
+  parentId: number | null,
+  getId: () => number,
+) {
+  let anchor: Node | null = null;
+  let node: Node | null = null;
+  let property;
 
-  let anchor = null
-  let node, property
+  while (!peekableTokens.peek()!.done) {
+    const { type, value, row, col } = peekableTokens.peek()!.value!;
 
-  while (!peekableTokens.peek().done) {
-    let {type, value, row, col} = peekableTokens.peek().value
-
-    if (type === 'parenthesis' && value === '(') break
-    if (type === 'parenthesis' && value === ')') {
-      if (node != null) onNodeCreated({node})
-      return anchor
+    if (type === "parenthesis" && value === "(") break;
+    if (type === "parenthesis" && value === ")") {
+      return anchor;
     }
 
-    if (type === 'semicolon' || node == null) {
+    if (type === "semicolon" || node == null) {
       // Prepare new node
 
-      let lastNode = node
+      const lastNode: Node | null = node;
 
       node = {
         id: getId(),
         data: {},
-        parentId: lastNode == null ? parentId : lastNode.id,
-        children: []
-      }
-
-      if (dictionary != null) dictionary[node.id] = node
+        // FIXME: Why is deno-ts saying lastNode is never below?
+        // (Seen by removing cast.)
+        parentId: lastNode == null ? parentId : (lastNode as Node).id,
+        children: [],
+      };
 
       if (lastNode != null) {
-        onNodeCreated({node: lastNode})
-        lastNode.children.push(node)
+        lastNode.children.push(node);
       } else {
-        anchor = node
+        anchor = node;
       }
     }
 
-    if (type === 'semicolon') {
+    if (type === "semicolon") {
       // Work is already done
-    } else if (type === 'prop_ident') {
+    } else if (type === "prop_ident") {
       if (node != null) {
         // Prepare new property
 
-        let identifier =
-          value === value.toUpperCase()
-            ? value
-            : value
-                .split('')
-                .filter(x => x.toUpperCase() === x)
-                .join('')
+        const identifier = value === value.toUpperCase() ? value : value
+          .split("")
+          .filter((x) => x.toUpperCase() === x)
+          .join("");
 
-        if (identifier !== '') {
-          if (!(identifier in node.data)) node.data[identifier] = []
-          property = node.data[identifier]
+        if (identifier !== "") {
+          if (!(identifier in node.data)) node.data[identifier] = [];
+          property = node.data[identifier];
         } else {
-          property = null
+          property = null;
         }
       }
-    } else if (type === 'c_value_type') {
+    } else if (type === "c_value_type") {
       if (property != null) {
-        property.push(unescapeString(value.slice(1, -1)))
+        property.push(unescapeString(value.slice(1, -1)));
       }
-    } else if (type === 'invalid') {
-      throw new Error(`Unexpected token at ${row + 1}:${col + 1}`)
+    } else if (type === "invalid") {
+      throw new Error(`Unexpected token at ${row + 1}:${col + 1}`);
     } else {
       throw new Error(
-        `Unexpected token type '${type}' at ${row + 1}:${col + 1}`
-      )
+        `Unexpected token type '${type}' at ${row + 1}:${col + 1}`,
+      );
     }
 
-    peekableTokens.next()
+    peekableTokens.next();
   }
 
   if (node == null) {
@@ -82,64 +85,44 @@ function _parseTokens(peekableTokens, parentId, options) {
       id: null,
       data: {},
       parentId: null,
-      children: []
-    }
-  } else {
-    onNodeCreated({node})
+      children: [],
+    };
   }
 
-  while (!peekableTokens.peek().done) {
-    let {type, value, progress} = peekableTokens.peek().value
+  while (!peekableTokens.peek()!.done) {
+    const { type, value } = peekableTokens.peek()!.value!;
 
-    if (type === 'parenthesis' && value === '(') {
-      peekableTokens.next()
+    if (type === "parenthesis" && value === "(") {
+      peekableTokens.next();
 
-      let child = _parseTokens(peekableTokens, node.id, options)
+      const child = _parseTokens(peekableTokens, node.id, getId);
 
       if (child != null) {
-        node.children.push(child)
+        node.children.push(child);
       }
-    } else if (type === 'parenthesis' && value === ')') {
-      onProgress({progress})
-      break
+    } else if (type === "parenthesis" && value === ")") {
+      break;
     }
 
-    peekableTokens.next()
+    peekableTokens.next();
   }
 
-  return anchor
+  return anchor;
 }
 
-exports.parseTokens = function(
-  tokens,
-  {
-    getId = (id => () => id++)(0),
-    dictionary = null,
-    onProgress = () => {},
-    onNodeCreated = () => {}
-  } = {}
+function parseTokens(
+  tokens: Generator<Token>,
 ) {
-  let node = _parseTokens(new Peekable(tokens), null, {
-    getId,
-    dictionary,
-    onProgress,
-    onNodeCreated
-  })
+  const getId = ((id) => () => id++)(0);
+  const node = _parseTokens(new Peekable(tokens), null, getId);
 
-  return node.id == null ? node.children : [node]
+  if (node === null) {
+    return null;
+  }
+
+  return node.id == null ? node.children : [node];
 }
 
-exports.parse = function(contents, options = {}) {
-  return exports.parseTokens(tokenizeIter(contents), options)
-}
-
-exports.parseBuffer = function(buffer, options = {}) {
-  return exports.parseTokens(
-    tokenizeBufferIter(buffer, {encoding: options.encoding}),
-    options
-  )
-}
-
-exports.parseFile = function(filename, options = {}) {
-  return exports.parseBuffer(fs.readFileSync(filename), options)
+export default function parse(contents: string) {
+  return parseTokens(tokenizeIter(contents));
 }

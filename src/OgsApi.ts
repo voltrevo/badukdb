@@ -89,12 +89,6 @@ class OgsApi {
 
 // deno-lint-ignore no-namespace
 namespace OgsApi {
-  export const Game = tb.Object({
-    id: tb.number,
-  });
-
-  export type Game = tb.TypeOf<typeof Game>;
-
   export function PaginationResponse<T>(type: tb.Bicoder<T>) {
     return tb.Object({
       count: tb.number,
@@ -103,6 +97,39 @@ namespace OgsApi {
       results: tb.Array(type),
     });
   }
+
+  export const Player = tb.Object({
+    id: tb.number,
+    username: tb.string,
+    icon: tb.string,
+    ranking: tb.number,
+  });
+
+  export const Game = tb.Object({
+    related: tb.Object({
+      detail: tb.string,
+    }),
+    id: tb.number,
+    players: tb.Object({
+      black: Player,
+      white: Player,
+    }),
+    name: tb.string,
+    source: tb.string,
+    width: tb.number,
+    height: tb.number,
+    rules: tb.string,
+    ranked: tb.boolean,
+    handicap: tb.number,
+    komi: tb.string,
+    black_lost: tb.boolean,
+    white_lost: tb.boolean,
+    annulled: tb.boolean,
+    started: tb.string,
+    ended: tb.Optional(tb.string),
+  });
+
+  export type Game = tb.TypeOf<typeof Game>;
 }
 
 export default OgsApi;

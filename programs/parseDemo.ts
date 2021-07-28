@@ -1,32 +1,25 @@
 #!/usr/bin/env -S deno run --allow-env --allow-read
 
 import parseSgf from "../src/sgf/parse.ts";
-import dataDir from "../src/dataDir.ts";
+import RawGameRecords from "../src/RawGameRecords.ts";
 
-const sgfDir = `${dataDir}/sgfByPlayerId`;
-const dirsToRead = [sgfDir];
+for await (const game of RawGameRecords()) {
+  const parsed = parseSgf(game.sgf);
 
-while (true) {
-  const dir = dirsToRead.shift();
+  for (const node of parsed ?? []) {
+    const date = (node.data.DT ?? []).join("");
+    const black = (node.data.PB ?? []).join("");
+    const white = (node.data.PW ?? []).join("");
 
-  if (dir === undefined) {
-    break;
-  }
+    const predictedTitle = `${black} vs. ${white}`;
+    const actualTitle = game.ogs.name;
 
-  for await (const entry of Deno.readDir(dir)) {
-    const entryPath = `${dir}/${entry.name}`;
+    let msg = `${date}: ${predictedTitle}`;
 
-    if (entry.isDirectory) {
-      dirsToRead.push(entryPath);
-    } else if (entryPath.endsWith(".sgf")) {
-      const parsed = parseSgf(await Deno.readTextFile(entryPath));
-
-      for (const node of parsed ?? []) {
-        const date = (node.data.DT ?? []).join("");
-        const black = (node.data.PB ?? []).join("");
-        const white = (node.data.PW ?? []).join("");
-        console.log(`${date}: ${black} v ${white}`);
-      }
+    if (actualTitle !== predictedTitle) {
+      msg += ` - ${actualTitle}`;
     }
+
+    console.log(msg);
   }
 }

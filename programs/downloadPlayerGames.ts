@@ -16,7 +16,7 @@ if (typeof playerId !== "number") {
   Deno.exit(1);
 }
 
-const playerDir = `${dataDir}/sgfByPlayerId/${playerId}`;
+const playerDir = `${dataDir}/gamesByPlayerId/${playerId}`;
 fs.ensureDir(playerDir);
 
 const api = new OgsApi("https://online-go.com");
@@ -29,7 +29,8 @@ for await (const game of api.Games(playerId)) {
     continue;
   }
 
-  const filePath = `${playerDir}/${game.id}.sgf`;
-  await Deno.writeTextFile(filePath, sgf);
+  const filePath = `${playerDir}/${game.id}.json`;
+  await Deno.writeTextFile(filePath, JSON.stringify({ ogs: game, sgf }));
+
   console.log(`Downloaded ${filePath}`);
 }

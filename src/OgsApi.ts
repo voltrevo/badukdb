@@ -68,11 +68,11 @@ class OgsApi {
   }
 
   async *Games(playerId: number): AsyncGenerator<OgsApi.Game> {
-    yield* this.getPaginated(`/v1/players/${playerId}/games/`, OgsApi.Game);
+    yield* this.getPaginated(`/api/v1/players/${playerId}/games/`, OgsApi.Game);
   }
 
   async Sgf(gameId: number): Promise<string | null> {
-    return await this.getString(`/v1/games/${gameId}/sgf/`);
+    return await this.getString(`/api/v1/games/${gameId}/sgf/`);
   }
 }
 

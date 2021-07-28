@@ -47,5 +47,6 @@ export type Move = {
 
 export type Player = {
   id: PlayerId;
+  externalId: string;
   // TODO: name, etc
 };

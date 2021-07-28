@@ -20,6 +20,7 @@ type IDatabase = {
 
   insertPlayer(player: Player): Promise<void>;
   lookupPlayer(id: PlayerId): Promise<Player | null>;
+  lookupPlayerByExternalId(externalId: string): Promise<Player | null>;
 
   findMoves(board: BoardHash): AsyncIterator<Move>;
 };

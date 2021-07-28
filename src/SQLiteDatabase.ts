@@ -55,8 +55,13 @@ function createTablesIfNotExisting(db: sqlite.DB) {
 
   db.query(`
     CREATE TABLE IF NOT EXISTS players (
-      id BLOB PRIMARY KEY
+      id BLOB PRIMARY KEY,
+      externalId TEXT NOT NULL
     );
+  `);
+
+  db.query(`
+    CREATE UNIQUE INDEX IF NOT EXISTS idx_players_ext ON players (externalId);
   `);
 }
 
@@ -104,14 +109,18 @@ function Queries(db: sqlite.DB) {
 
     insertPlayer: db.prepareQuery(`
       INSERT INTO players (
-        id
+        id, externalId
       ) VALUES (
-        :id
+        :id, :externalId
       )
     `),
 
     lookupPlayer: db.prepareQuery(`
       SELECT * from players WHERE id = :id LIMIT 1
+    `),
+
+    lookupPlayerByExternalId: db.prepareQuery(`
+      SELECT * from players WHERE externalId = :externalId LIMIT 1
     `),
 
     findMoves: db.prepareQuery(`
@@ -232,6 +241,7 @@ export default class SQLiteDatabase implements IDatabase {
 
     this.queries.insertPlayer({
       ":id": player.id.value.value,
+      ":externalId": player.externalId,
     });
   }
 
@@ -246,6 +256,24 @@ export default class SQLiteDatabase implements IDatabase {
 
     return {
       id: PlayerId(Id(row[0])),
+      externalId: row[1],
+    };
+  }
+
+  async lookupPlayerByExternalId(externalId: string): Promise<Player | null> {
+    await Promise.resolve();
+
+    const [row] = this.queries.lookupPlayerByExternalId({
+      ":externalId": externalId,
+    });
+
+    if (row === undefined) {
+      return null;
+    }
+
+    return {
+      id: PlayerId(Id(row[0])),
+      externalId: row[1],
     };
   }
 

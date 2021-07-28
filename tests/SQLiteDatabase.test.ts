@@ -18,6 +18,7 @@ Deno.test("insert player and retrieve", async () => {
 
   const player: Player = {
     id: PlayerId(RandomId()),
+    externalId: "ogs:123",
   };
 
   db.insertPlayer(player);

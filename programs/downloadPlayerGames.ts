@@ -4,6 +4,7 @@ import * as fs from "https://deno.land/std@0.103.0/fs/mod.ts";
 
 import { parseCliArgs } from "../deps.ts";
 
+import dataDir from "../src/dataDir.ts";
 import OgsApi from "../src/OgsApi.ts";
 
 const args = parseCliArgs(Deno.args);
@@ -15,7 +16,6 @@ if (typeof playerId !== "number") {
   Deno.exit(1);
 }
 
-const dataDir = `${Deno.env.get("HOME")}/data/badukdb`;
 const playerDir = `${dataDir}/sgfByPlayerId/${playerId}`;
 fs.ensureDir(playerDir);
 

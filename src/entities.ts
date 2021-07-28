@@ -14,6 +14,9 @@ export type BoardHash = ReturnType<typeof BoardHash>;
 export const Time = Nominal("Time")<number>();
 export type Time = ReturnType<typeof Time>;
 
+export const Location = Nominal("Location")<string>();
+export type Location = ReturnType<typeof Location>;
+
 export type Game = {
   id: GameId;
   black: PlayerId;
@@ -37,7 +40,7 @@ export type Move = {
   game: GameId;
   number: number;
   board: BoardHash;
-  location: { x: number; y: number };
+  location: Location;
   player: PlayerId;
   gameResult: number;
 };

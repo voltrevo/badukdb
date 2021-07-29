@@ -102,7 +102,7 @@ function extractSgfMoves(parsedSgf: ReturnType<typeof parseSgf>) {
   }
 
   const moves: {
-    pos: { x: number; y: number };
+    pos: { x: number; y: number } | null;
     color: Color;
   }[] = [];
 
@@ -143,6 +143,10 @@ function extractSgfMoves(parsedSgf: ReturnType<typeof parseSgf>) {
 
 function NumericPos(sgfPos: string) {
   const alphabet = "abcdefghijklmnopqrstuvwxyz";
+
+  if (sgfPos === "") {
+    return null;
+  }
 
   assert(sgfPos.length === 2);
   assert([...sgfPos].every((c) => alphabet.includes(c)));

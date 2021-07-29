@@ -9,10 +9,10 @@ Deno.test("correctly predicts final board position", () => {
   const board = new BoardClass(game.width, game.height, game.komi);
 
   for (const move of game.moves) {
-    if (move.pos === null) {
+    if (move.location === null) {
       board.pass(move.color);
     } else {
-      board.play(move.pos.x, move.pos.y, move.color);
+      board.play(move.location.x, move.location.y, move.color);
     }
   }
 

@@ -11,7 +11,7 @@ type OutcomeDetail = (
   | { type: "unknown"; description: string }
 );
 
-export default function SimpleGameData(game: RawGameRecord) {
+function SimpleGameData(game: RawGameRecord) {
   const metadata = MetadataFromOGS(game.ogs);
 
   // TODO: handicap moves
@@ -23,6 +23,8 @@ export default function SimpleGameData(game: RawGameRecord) {
     moves,
   };
 }
+
+type SimpleGameData = ReturnType<typeof SimpleGameData>;
 
 function MetadataFromOGS(ogs: RawGameRecord["ogs"]) {
   return {
@@ -62,6 +64,7 @@ function MetadataFromOGS(ogs: RawGameRecord["ogs"]) {
       })();
 
       if (winner === null) {
+        // TODO: Distinguish ties?
         return null;
       }
 
@@ -103,7 +106,7 @@ function extractSgfMoves(parsedSgf: ReturnType<typeof parseSgf>) {
   }
 
   const moves: {
-    pos: { x: number; y: number } | null;
+    location: { x: number; y: number } | null;
     color: Color;
   }[] = [];
 
@@ -120,7 +123,7 @@ function extractSgfMoves(parsedSgf: ReturnType<typeof parseSgf>) {
       assert(blackMove.length === 1);
 
       moves.push({
-        pos: NumericPos(blackMove[0]),
+        location: Location(blackMove[0]),
         color: "black",
       });
     } else if (whiteMove !== undefined) {
@@ -128,7 +131,7 @@ function extractSgfMoves(parsedSgf: ReturnType<typeof parseSgf>) {
       assert(whiteMove.length === 1);
 
       moves.push({
-        pos: NumericPos(whiteMove[0]),
+        location: Location(whiteMove[0]),
         color: "white",
       });
     } else {
@@ -142,17 +145,19 @@ function extractSgfMoves(parsedSgf: ReturnType<typeof parseSgf>) {
   return moves;
 }
 
-function NumericPos(sgfPos: string) {
+function Location(sgfLocation: string) {
   const alphabet = "abcdefghijklmnopqrstuvwxyz";
 
-  if (sgfPos === "") {
+  if (sgfLocation === "") {
     return null;
   }
 
-  assert(sgfPos.length === 2);
-  assert([...sgfPos].every((c) => alphabet.includes(c)));
+  assert(sgfLocation.length === 2);
+  assert([...sgfLocation].every((c) => alphabet.includes(c)));
 
-  const [x, y] = [...sgfPos].map((c) => alphabet.indexOf(c) + 1);
+  const [x, y] = [...sgfLocation].map((c) => alphabet.indexOf(c) + 1);
 
   return { x, y };
 }
+
+export default SimpleGameData;

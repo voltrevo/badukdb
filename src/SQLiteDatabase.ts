@@ -5,7 +5,6 @@ import {
   BoardHash,
   Game,
   GameId,
-  Location,
   Move,
   Player,
   PlayerId,
@@ -42,7 +41,9 @@ function createTablesIfNotExisting(db: sqlite.DB) {
       game BLOB NOT NULL,
       number INTEGER NOT NULL,
       board BLOB NOT NULL,
-      location TEXT NOT NULL,
+      locationX INTEGER,
+      locationY INTEGER,
+      color INTEGER NOT NULL,
       player BLOB NOT NULL,
       gameResult REAL NOT NULL,
       PRIMARY KEY (game, number)
@@ -80,7 +81,7 @@ function Queries(db: sqlite.DB) {
     `),
 
     insertBoard: db.prepareQuery(`
-      INSERT INTO boards (
+      INSERT OR REPLACE INTO boards (
         hash, colorToPlay, offboardPoints, width, height, content
       ) VALUES (
         :hash, :colorToPlay, :offboardPoints, :width, :height, :content
@@ -93,9 +94,9 @@ function Queries(db: sqlite.DB) {
 
     insertMove: db.prepareQuery(`
       INSERT INTO moves (
-        game, number, board, location, player, gameResult
+        game, number, board, locationX, locationY, color, player, gameResult
       ) VALUES (
-        :game, :number, :board, :location, :player, :gameResult
+        :game, :number, :board, :locationX, :locationY, :color, :player, :gameResult
       )
     `),
 
@@ -208,7 +209,8 @@ export default class SQLiteDatabase implements IDatabase {
       ":game": move.game.value.value,
       ":number": move.number,
       ":board": move.board.value.value,
-      ":location": move.location.value,
+      ":locationX": move.location?.x ?? null,
+      ":locationY": move.location?.y ?? null,
       ":player": move.player.value.value,
       ":gameResult": move.gameResult,
     });
@@ -230,9 +232,10 @@ export default class SQLiteDatabase implements IDatabase {
       game: GameId(Id(row[0])),
       number: row[1],
       board: BoardHash(constructHash(row[2])),
-      location: Location(row[3]),
-      player: PlayerId(Id(row[4])),
-      gameResult: row[5],
+      location: row[3] === null ? null : { x: row[3], y: row[4] },
+      color: row[5] === 0 ? "black" : "white",
+      player: PlayerId(Id(row[6])),
+      gameResult: row[7],
     };
   }
 
@@ -287,9 +290,10 @@ export default class SQLiteDatabase implements IDatabase {
         game: GameId(Id(row[0])),
         number: row[1],
         board: BoardHash(constructHash(row[2])),
-        location: Location(row[3]),
-        player: PlayerId(Id(row[4])),
-        gameResult: row[5],
+        location: row[3] === null ? null : { x: row[3], y: row[4] },
+        color: row[5] === 0 ? "black" as const : "white" as const,
+        player: PlayerId(Id(row[6])),
+        gameResult: row[7],
       };
     }
   }

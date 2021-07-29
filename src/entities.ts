@@ -1,3 +1,4 @@
+import { Color } from "./BoardClass.ts";
 import Hash from "./Hash.ts";
 import Id from "./Id.ts";
 import Nominal from "./Nominal.ts";
@@ -14,8 +15,7 @@ export type BoardHash = ReturnType<typeof BoardHash>;
 export const Time = Nominal("Time")<number>();
 export type Time = ReturnType<typeof Time>;
 
-export const Location = Nominal("Location")<string>();
-export type Location = ReturnType<typeof Location>;
+export type Location = { x: number; y: number };
 
 export type Game = {
   id: GameId;
@@ -28,7 +28,7 @@ export type Game = {
 
 export type Board = {
   hash: BoardHash;
-  colorToPlay: "black" | "white";
+  colorToPlay: Color;
   offboardPoints: number;
   width: number;
   height: number;
@@ -40,7 +40,8 @@ export type Move = {
   game: GameId;
   number: number;
   board: BoardHash;
-  location: Location;
+  location: Location | null;
+  color: Color;
   player: PlayerId;
   gameResult: number;
 };

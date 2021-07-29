@@ -14,7 +14,12 @@ const signMap = [
 
 window.addEventListener("load", () => {
   preact.render(
-    preact.h(BoundedGoban, { maxWidth: 500, maxHeight: 500, signMap }),
+    preact.h(BoundedGoban, {
+      maxWidth: 500,
+      maxHeight: 500,
+      signMap,
+      showCoordinates: true,
+    }),
     (globalThis as any).document.body,
   );
 });

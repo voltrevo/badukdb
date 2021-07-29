@@ -51,7 +51,7 @@ function createTablesIfNotExisting(db: sqlite.DB) {
   `);
 
   db.query(`
-    CREATE UNIQUE INDEX IF NOT EXISTS idx_moves_board ON moves (board);
+    CREATE INDEX IF NOT EXISTS idx_moves_board ON moves (board);
   `);
 
   db.query(`
@@ -211,6 +211,7 @@ export default class SQLiteDatabase implements IDatabase {
       ":board": move.board.value.value,
       ":locationX": move.location?.x ?? null,
       ":locationY": move.location?.y ?? null,
+      ":color": move.color,
       ":player": move.player.value.value,
       ":gameResult": move.gameResult,
     });

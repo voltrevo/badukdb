@@ -51,6 +51,10 @@ function MetadataFromOGS(ogs: RawGameRecord["ogs"]) {
         return null;
       }
 
+      if (ogs.ended === null) {
+        return null; // Otherwise OGS records black_lost and white_lost!
+      }
+
       const winner = ((): Color | null => {
         if (!ogs.black_lost && !ogs.white_lost) {
           return null;

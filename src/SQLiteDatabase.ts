@@ -281,7 +281,7 @@ export default class SQLiteDatabase implements IDatabase {
     };
   }
 
-  async *findMoves(board: BoardHash) {
+  async *findMoves(board: BoardHash): AsyncGenerator<Move> {
     await Promise.resolve();
 
     const rows = this.queries.findMoves({ ":board": board.value.value });

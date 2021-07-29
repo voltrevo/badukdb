@@ -1,4 +1,4 @@
-import { createHash } from "../deps.ts";
+import { createHash } from "./deps.ts";
 
 import Nominal from "./Nominal.ts";
 

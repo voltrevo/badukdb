@@ -1,7 +1,7 @@
-import addGameToDatabase from "../src/addGameToDatabase.ts";
-import BoardClass from "../src/BoardClass.ts";
-import SimpleGameData from "../src/SimpleGameData.ts";
-import SQLiteDatabase from "../src/SQLiteDatabase.ts";
+import addGameToDatabase from "../common/addGameToDatabase.ts";
+import BoardClass from "../common/BoardClass.ts";
+import SimpleGameData from "../common/SimpleGameData.ts";
+import SQLiteDatabase from "../backend/SQLiteDatabase.ts";
 import { assertEquals } from "./deps.ts";
 import RawGameRecordExample from "./helpers/RawGameRecordExample.ts";
 

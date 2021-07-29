@@ -1,4 +1,4 @@
-import { createHash } from "../../deps.ts";
+import { createHash } from "../deps.ts";
 
 import basex from "./basex.ts";
 import buffersEqual from "./buffersEqual.ts";

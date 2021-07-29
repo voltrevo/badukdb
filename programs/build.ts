@@ -1,9 +1,9 @@
 #!/usr/bin/env -S deno run --allow-run --allow-read
 
 import shell from "./helpers/shell.ts";
-import webDir from "../src/web/dir.ts";
+import frontendDir from "../frontend/dir.ts";
 
-Deno.chdir(webDir);
+Deno.chdir(frontendDir);
 
 await shell.run(
   "deno",

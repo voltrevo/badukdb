@@ -1,8 +1,8 @@
-import { tb } from "../../deps.ts";
+import { tb } from "./deps.ts";
 
-import { BoardHash, Location } from "../entities.ts";
-import { constructHash } from "../Hash.ts";
-import IDatabase from "../IDatabase.ts";
+import { BoardHash, Location } from "./entities.ts";
+import { constructHash } from "./Hash.ts";
+import IDatabase from "./IDatabase.ts";
 import Protocol from "./Protocol.ts";
 
 export default function implementProtocol(

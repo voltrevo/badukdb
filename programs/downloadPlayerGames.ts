@@ -2,10 +2,10 @@
 
 import * as fs from "https://deno.land/std@0.103.0/fs/mod.ts";
 
-import { parseCliArgs } from "../deps.ts";
+import { parseCliArgs } from "../backend/deps.ts";
 
-import dataDir from "../src/dataDir.ts";
-import OgsApi from "../src/OgsApi.ts";
+import dataDir from "../backend/dataDir.ts";
+import OgsApi from "../common/OgsApi.ts";
 
 const args = parseCliArgs(Deno.args);
 

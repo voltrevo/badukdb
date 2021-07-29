@@ -1,4 +1,4 @@
-import { tb } from "../../deps.ts";
+import { tb } from "./deps.ts";
 
 const Location = tb.Object({
   x: tb.number,

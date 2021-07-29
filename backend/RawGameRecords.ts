@@ -1,7 +1,7 @@
-import { tb } from "../deps.ts";
+import { tb } from "./deps.ts";
 
 import dataDir from "./dataDir.ts";
-import RawGameRecord from "./RawGameRecord.ts";
+import RawGameRecord from "../common/RawGameRecord.ts";
 
 const gamesDir = `${dataDir}/gamesByPlayerId`;
 

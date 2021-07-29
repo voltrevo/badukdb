@@ -1,7 +1,7 @@
 #!/usr/bin/env -S deno run --allow-env --allow-read
 
-import parseSgf from "../src/sgf/parse.ts";
-import RawGameRecords from "../src/RawGameRecords.ts";
+import parseSgf from "../common/sgf/parse.ts";
+import RawGameRecords from "../backend/RawGameRecords.ts";
 
 for await (const game of RawGameRecords()) {
   const parsed = parseSgf(game.sgf);

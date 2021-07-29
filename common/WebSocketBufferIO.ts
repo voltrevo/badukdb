@@ -1,10 +1,9 @@
-import type { ws } from "../../deps.ts";
-import { tb } from "../../deps.ts";
+import { DenoWebSocket, tb } from "./deps.ts";
 
 export default class WebSocketBufferIO implements tb.BufferIO {
   queue = new tb.AsyncQueue<Uint8Array>();
 
-  constructor(public socket: WebSocket | ws.WebSocket) {
+  constructor(public socket: WebSocket | DenoWebSocket) {
     if (this.isClosed()) {
       this.queue.close();
     }

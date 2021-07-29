@@ -1,7 +1,7 @@
-import { BoardHash, Player, PlayerId } from "../src/entities.ts";
-import Hash from "../src/Hash.ts";
-import { RandomId } from "../src/Id.ts";
-import SQLiteDatabase from "../src/SQLiteDatabase.ts";
+import { BoardHash, Player, PlayerId } from "../common/entities.ts";
+import Hash from "../common/Hash.ts";
+import { RandomId } from "../common/Id.ts";
+import SQLiteDatabase from "../backend/SQLiteDatabase.ts";
 import { assertEquals } from "./deps.ts";
 
 Deno.test("find moves on non-existent board", async () => {

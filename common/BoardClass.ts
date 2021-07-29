@@ -1,4 +1,4 @@
-import { tb } from "../deps.ts";
+import { tb } from "./deps.ts";
 
 import { Board, BoardHash } from "./entities.ts";
 import Hash from "./Hash.ts";

@@ -1,4 +1,4 @@
-import { HttpStatus, tb } from "../deps.ts";
+import { HttpStatus, tb } from "./deps.ts";
 import FetchWith429Retries from "./FetchWith429Retries.ts";
 import assert from "./helpers/assert.ts";
 

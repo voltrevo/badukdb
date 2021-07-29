@@ -1,9 +1,8 @@
-import { tb } from "../../deps.ts";
-import { BoundedGoban, preact } from "./deps.ts";
+import { BoundedGoban, preact, tb } from "./deps.ts";
 
-import { apiPort } from "../constants.ts";
-import WebSocketBufferIO from "../api/WebSocketBufferIO.ts";
-import Protocol from "../api/Protocol.ts";
+import { apiPort } from "../common/constants.ts";
+import WebSocketBufferIO from "../common/WebSocketBufferIO.ts";
+import Protocol from "../common/Protocol.ts";
 
 const bufferIO = new WebSocketBufferIO(
   new WebSocket(`ws://localhost:${apiPort}/`),

@@ -1,6 +1,6 @@
-import { tb } from "../../deps.ts";
+import { tb } from "../../common/deps.ts";
 
-import RawGameRecord from "../../src/RawGameRecord.ts";
+import RawGameRecord from "../../common/RawGameRecord.ts";
 
 export default function RawGameRecordExample(): RawGameRecord {
   return tb.JSON.parse(

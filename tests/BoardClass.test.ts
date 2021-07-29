@@ -1,5 +1,5 @@
-import BoardClass from "../src/BoardClass.ts";
-import SimpleGameData from "../src/SimpleGameData.ts";
+import BoardClass from "../common/BoardClass.ts";
+import SimpleGameData from "../common/SimpleGameData.ts";
 import { assertEquals } from "./deps.ts";
 import RawGameRecordExample from "./helpers/RawGameRecordExample.ts";
 

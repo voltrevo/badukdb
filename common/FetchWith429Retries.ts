@@ -1,4 +1,4 @@
-import { HttpStatus } from "../deps.ts";
+import { HttpStatus } from "./deps.ts";
 
 type FetchFn = (url: string, options?: RequestInit) => Promise<Response>;
 

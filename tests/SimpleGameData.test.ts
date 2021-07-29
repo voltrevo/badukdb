@@ -1,6 +1,6 @@
 import { assertEquals } from "./deps.ts";
 
-import SimpleGameData from "../src/SimpleGameData.ts";
+import SimpleGameData from "../common/SimpleGameData.ts";
 import RawGameRecordExample from "./helpers/RawGameRecordExample.ts";
 
 Deno.test("SimpleGameData example", () => {

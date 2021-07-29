@@ -1,11 +1,11 @@
-import { serveHttp, tb, ws } from "../../deps.ts";
+import { serveHttp, tb, ws } from "./deps.ts";
 
-import { apiPort } from "../constants.ts";
-import dataDir from "../dataDir.ts";
-import SQLiteDatabase from "../SQLiteDatabase.ts";
-import implementProtocol from "./implementProtocol.ts";
-import Protocol from "./Protocol.ts";
-import WebSocketBufferIO from "./WebSocketBufferIO.ts";
+import { apiPort } from "../common/constants.ts";
+import dataDir from "./dataDir.ts";
+import SQLiteDatabase from "./SQLiteDatabase.ts";
+import implementProtocol from "../common/implementProtocol.ts";
+import Protocol from "../common/Protocol.ts";
+import WebSocketBufferIO from "../common/WebSocketBufferIO.ts";
 
 export default async function serve() {
   const db = new SQLiteDatabase(`${dataDir}/db.sqlite`);

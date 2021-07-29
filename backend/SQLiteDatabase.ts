@@ -1,4 +1,4 @@
-import { sqlite } from "../deps.ts";
+import { sqlite } from "./deps.ts";
 
 import {
   Board,
@@ -8,11 +8,11 @@ import {
   Move,
   Player,
   PlayerId,
-} from "./entities.ts";
+} from "../common/entities.ts";
 
-import { constructHash } from "./Hash.ts";
-import Id from "./Id.ts";
-import IDatabase from "./IDatabase.ts";
+import { constructHash } from "../common/Hash.ts";
+import Id from "../common/Id.ts";
+import IDatabase from "../common/IDatabase.ts";
 
 function createTablesIfNotExisting(db: sqlite.DB) {
   db.query(`

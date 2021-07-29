@@ -31,6 +31,7 @@ function MetadataFromOGS(ogs: RawGameRecord["ogs"]) {
     height: ogs.height,
     externalId: `ogs:game:${ogs.id}`,
     ranked: ogs.ranked,
+    komi: Number(ogs.komi),
     players: {
       black: {
         externalId: `ogs:player:${ogs.players.black.id}`,

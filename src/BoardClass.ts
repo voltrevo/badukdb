@@ -103,10 +103,8 @@ export default class BoardClass {
     this.data.content[index] = byte;
   }
 
-  pass() {
-    this.data.colorToPlay = this.data.colorToPlay === "black"
-      ? "white"
-      : "black";
+  pass(color: Color) {
+    this.data.colorToPlay = color === "black" ? "white" : "black";
   }
 
   *IterateAdjacents(x: number, y: number): Generator<{ x: number; y: number }> {
@@ -227,5 +225,25 @@ export default class BoardClass {
 
   static OpponentColor(color: Color): Color {
     return color === "black" ? "white" : "black";
+  }
+
+  PrettyString(): string {
+    let output = "";
+
+    for (let y = 1; y <= this.data.height; y++) {
+      for (let x = 1; x <= this.data.width; x++) {
+        output += {
+          black: " #",
+          white: " 0",
+          empty: "  ",
+        }[this.read(x, y)];
+      }
+
+      if (y !== this.data.height) {
+        output += "\n";
+      }
+    }
+
+    return output;
   }
 }

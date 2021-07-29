@@ -13,6 +13,7 @@ Deno.test("SimpleGameData example", () => {
     height: 13,
     externalId: "ogs:game:28073181",
     ranked: true,
+    komi: 0.5,
     players: {
       black: {
         externalId: "ogs:player:630242",

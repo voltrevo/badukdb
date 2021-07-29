@@ -5,7 +5,7 @@ import { constructHash } from "../Hash.ts";
 import IDatabase from "../IDatabase.ts";
 import Protocol from "./Protocol.ts";
 
-export default function implement(
+export default function implementProtocol(
   db: IDatabase,
 ): tb.Implementation<typeof Protocol> {
   return {

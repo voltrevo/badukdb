@@ -5,8 +5,8 @@ import Hash from "./Hash.ts";
 import assert from "./helpers/assert.ts";
 import assertExists from "./helpers/assertExists.ts";
 
-const Color = tb.Enum("black", "white");
-type Color = tb.TypeOf<typeof Color>;
+export const Color = tb.Enum("black", "white");
+export type Color = tb.TypeOf<typeof Color>;
 
 const HashlessBoard = tb.Object({
   colorToPlay: Color,

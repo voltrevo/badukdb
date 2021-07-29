@@ -124,6 +124,7 @@ namespace OgsApi {
     komi: tb.string,
     black_lost: tb.boolean,
     white_lost: tb.boolean,
+    outcome: tb.string,
     annulled: tb.boolean,
     started: tb.string,
     ended: tb.Optional(tb.string),

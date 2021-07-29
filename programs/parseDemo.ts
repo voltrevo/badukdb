@@ -6,7 +6,7 @@ import RawGameRecords from "../src/RawGameRecords.ts";
 for await (const game of RawGameRecords()) {
   const parsed = parseSgf(game.sgf);
 
-  for (const node of parsed ?? []) {
+  for (const node of parsed) {
     const date = (node.data.DT ?? []).join("");
     const black = (node.data.PB ?? []).join("");
     const white = (node.data.PW ?? []).join("");

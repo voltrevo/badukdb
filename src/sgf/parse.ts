@@ -117,7 +117,7 @@ function parseTokens(
   const node = _parseTokens(new Peekable(tokens), null, getId);
 
   if (node === null) {
-    return null;
+    return [];
   }
 
   return node.id == null ? node.children : [node];

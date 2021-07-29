@@ -6,7 +6,7 @@ const Location = tb.Object({
 });
 
 const MoveStat = tb.Object({
-  location: Location,
+  location: tb.Optional(Location),
   count: tb.number,
 });
 

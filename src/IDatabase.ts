@@ -22,7 +22,7 @@ type IDatabase = {
   lookupPlayer(id: PlayerId): Promise<Player | null>;
   lookupPlayerByExternalId(externalId: string): Promise<Player | null>;
 
-  findMoves(board: BoardHash): AsyncIterator<Move>;
+  findMoves(board: BoardHash): AsyncGenerator<Move>;
 };
 
 export default IDatabase;

@@ -1,4 +1,4 @@
-import { Goban, preact } from "./deps.ts";
+import { BoundedGoban, preact } from "./deps.ts";
 
 const signMap = [
   [0, 0, 1, 0, -1, -1, 1, 0, 0],
@@ -14,7 +14,7 @@ const signMap = [
 
 window.addEventListener("load", () => {
   preact.render(
-    preact.h(Goban, { vertexSize: 24, signMap }),
+    preact.h(BoundedGoban, { maxWidth: 500, maxHeight: 500, signMap }),
     (globalThis as any).document.body,
   );
 });

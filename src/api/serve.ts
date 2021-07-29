@@ -7,7 +7,7 @@ import implementProtocol from "./implementProtocol.ts";
 import Protocol from "./Protocol.ts";
 import WebSocketBufferIO from "./WebSocketBufferIO.ts";
 
-export default async function serveAPI() {
+export default async function serve() {
   const db = new SQLiteDatabase(`${dataDir}/db.sqlite`);
   const protocolImpl = implementProtocol(db);
 

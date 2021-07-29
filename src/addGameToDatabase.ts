@@ -50,7 +50,16 @@ export default async function addGameToDatabase(
       db.insertBoard(board),
       db.insertMove(move),
     );
+
+    if (gameMove.location === null) {
+      boardClass.pass(gameMove.color);
+    } else {
+      boardClass.play(gameMove.location.x, gameMove.location.y, gameMove.color);
+    }
   }
+
+  // Include the final board position, even though no moves reference it
+  promises.push(db.insertBoard(boardClass.Board()));
 
   await Promise.all(promises);
 }

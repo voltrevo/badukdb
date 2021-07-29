@@ -1,16 +1,9 @@
 import { tb } from "../deps.ts";
 
 import dataDir from "./dataDir.ts";
-import OgsApi from "./OgsApi.ts";
+import RawGameRecord from "./RawGameRecord.ts";
 
 const gamesDir = `${dataDir}/gamesByPlayerId`;
-
-export const RawGameRecord = tb.Object({
-  ogs: OgsApi.Game,
-  sgf: tb.string,
-});
-
-export type RawGameRecord = tb.TypeOf<typeof RawGameRecord>;
 
 export default async function* RawGameRecords(): AsyncGenerator<RawGameRecord> {
   const dirsToRead = [gamesDir];

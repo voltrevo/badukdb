@@ -1,6 +1,6 @@
 import { Color } from "./BoardClass.ts";
 import assert from "./helpers/assert.ts";
-import { RawGameRecord } from "./RawGameRecords.ts";
+import RawGameRecord from "./RawGameRecord.ts";
 import parseSgf from "./sgf/parse.ts";
 
 type OutcomeDetail = (

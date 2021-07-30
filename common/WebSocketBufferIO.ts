@@ -1,40 +1,26 @@
-import { DenoWebSocket, tb } from "./deps.ts";
+import { tb } from "./deps.ts";
 
 export default class WebSocketBufferIO implements tb.BufferIO {
   queue = new tb.AsyncQueue<Uint8Array>();
 
-  constructor(public socket: WebSocket | DenoWebSocket) {
-    if (this.isClosed()) {
+  constructor(public socket: WebSocket) {
+    if (this.socket.readyState === WebSocket.CLOSED) {
       this.queue.close();
     }
 
-    if (socket instanceof WebSocket) {
-      socket.addEventListener("close", () => this.queue.close());
+    socket.addEventListener("close", () => this.queue.close());
 
-      socket.addEventListener("message", async ({ data }) => {
-        if (!(data instanceof Blob)) {
-          throw new Error("Expected Uint8Array");
-        }
+    socket.addEventListener("message", async ({ data }) => {
+      if (!(data instanceof Blob)) {
+        throw new Error("Expected Uint8Array");
+      }
 
-        this.queue.push(new Uint8Array(await data.arrayBuffer()));
-      });
-    } else {
-      (async () => {
-        for await (const data of socket) {
-          if (!(data instanceof Uint8Array)) {
-            // ignore: pings/etc... TODO: deal with strings?
-          } else {
-            this.queue.push(data);
-          }
-        }
-
-        this.queue.close();
-      })();
-    }
+      this.queue.push(new Uint8Array(await data.arrayBuffer()));
+    });
   }
 
   async write(buffer: Uint8Array): Promise<void> {
-    if (this.isClosed()) {
+    if (this.socket.readyState === WebSocket.CLOSED) {
       return; // TODO: Warn?
     }
 
@@ -47,13 +33,5 @@ export default class WebSocketBufferIO implements tb.BufferIO {
 
   async close() {
     return await this.socket.close();
-  }
-
-  private isClosed(): boolean {
-    if (this.socket instanceof WebSocket) {
-      return this.socket.readyState === WebSocket.CLOSED;
-    }
-
-    return this.socket.isClosed;
   }
 }

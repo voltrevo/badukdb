@@ -5,7 +5,7 @@ import dataDir from "./dataDir.ts";
 import SQLiteDatabase from "./SQLiteDatabase.ts";
 import implementProtocol from "../common/implementProtocol.ts";
 import Protocol from "../common/Protocol.ts";
-import WebSocketBufferIO from "../common/WebSocketBufferIO.ts";
+import DenoWebSocketBufferIO from "./DenoWebSocketBufferIO.ts";
 
 export default async function serve() {
   const db = new SQLiteDatabase(`${dataDir}/db.sqlite`);
@@ -20,7 +20,7 @@ export default async function serve() {
       bufWriter,
       headers,
     }).then((sock) => {
-      const bufferIO = new WebSocketBufferIO(sock);
+      const bufferIO = new DenoWebSocketBufferIO(sock);
       tb.serveProtocol(bufferIO, Protocol, protocolImpl);
     });
   }

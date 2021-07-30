@@ -2,8 +2,7 @@
 
 import shell from "./helpers/shell.ts";
 import webDir from "../frontend/dir.ts";
-
-// Deno.chdir(webDir);
+import { bundlerLocation } from "../frontend/deps.ts";
 
 await shell.run(
   "deno",
@@ -13,6 +12,6 @@ await shell.run(
   "--allow-net",
   "--allow-env",
   "--unstable",
-  "https://deno.land/x/bundler@0.8.1/spa_server_cli.ts",
+  `${bundlerLocation}/spa_server_cli.ts`,
   `${webDir}/index.html`,
 );

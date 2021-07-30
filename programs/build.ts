@@ -2,6 +2,7 @@
 
 import shell from "./helpers/shell.ts";
 import frontendDir from "../frontend/dir.ts";
+import { bundlerLocation } from "../frontend/deps.ts";
 
 Deno.chdir(frontendDir);
 
@@ -13,7 +14,7 @@ await shell.run(
   "--allow-net",
   "--allow-env",
   "--unstable",
-  "https://deno.land/x/bundler@0.8.1/cli.ts",
+  `${bundlerLocation}/cli.ts`,
   "bundle",
   "-L",
   "debug",

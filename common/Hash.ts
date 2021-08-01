@@ -1,4 +1,4 @@
-import { createHash } from "./deps.ts";
+import { Keccak256 } from "./deps.ts";
 
 import Nominal from "./Nominal.ts";
 
@@ -6,9 +6,7 @@ export const constructHash = Nominal("Hash")<Uint8Array>();
 
 function Hash(data: Uint8Array) {
   return constructHash(
-    new Uint8Array(
-      createHash("keccak256").update(data).digest(),
-    ),
+    new Uint8Array(new Keccak256().update(data).digest()),
   );
 }
 

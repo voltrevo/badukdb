@@ -1,8 +1,7 @@
 #!/usr/bin/env -S deno run --allow-run --allow-read
 
 import shell from "./helpers/shell.ts";
-import webDir from "../frontend/dir.ts";
-import { bundlerLocation } from "../frontend/deps.ts";
+import { bundlerLocation, dir as frontendDir } from "../frontend/meta.ts";
 
 await shell.run(
   "deno",
@@ -13,5 +12,5 @@ await shell.run(
   "--allow-env",
   "--unstable",
   `${bundlerLocation}/spa_server_cli.ts`,
-  `${webDir}/index.html`,
+  `${frontendDir}/index.html`,
 );

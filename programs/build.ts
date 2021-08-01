@@ -1,8 +1,7 @@
 #!/usr/bin/env -S deno run --allow-run --allow-read
 
 import shell from "./helpers/shell.ts";
-import frontendDir from "../frontend/dir.ts";
-import { bundlerLocation } from "../frontend/deps.ts";
+import { bundlerLocation, dir as frontendDir } from "../frontend/meta.ts";
 
 Deno.chdir(frontendDir);
 

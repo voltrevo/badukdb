@@ -3,6 +3,12 @@
 namespace shell {
   export async function run(...cmd: string[]): Promise<void> {
     const process = Deno.run({ cmd, stdout: "inherit", stderr: "inherit" });
+
+    globalThis.addEventListener("unload", () => {
+      console.log("Sending SIGINT to", cmd);
+      process.kill(Deno.Signal.SIGINT);
+    });
+
     const status = await process.status();
 
     if (!status.success) {

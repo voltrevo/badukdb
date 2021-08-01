@@ -11,7 +11,7 @@ export default async function serve() {
   const db = new SQLiteDatabase(`${dataDir}/db.sqlite`);
   const protocolImpl = implementProtocol(db);
 
-  for await (const req of serveHttp(`http://127.0.0.1:${apiPort}`)) {
+  for await (const req of serveHttp(`127.0.0.1:${apiPort}`)) {
     const { conn, r: bufReader, w: bufWriter, headers } = req;
 
     ws.acceptWebSocket({

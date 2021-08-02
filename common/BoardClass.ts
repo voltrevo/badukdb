@@ -50,7 +50,7 @@ export default class BoardClass {
 
   clone(): BoardClass {
     const board = new BoardClass(0, 0, 0);
-    board.data = { ...this.data };
+    board.data = { ...this.data, content: new Uint8Array(this.data.content) };
     return board;
   }
 

@@ -51,7 +51,7 @@
 /* Busy screen */
 
 .shudan-goban.shudan-busy::after {
-  animation: 2s linear -.5s shudan-busy infinite;
+  animation: 1s ease-in-out shudan-busy infinite;
   background-color: rgba(23, 10, 2, .1);
   /* background-image: linear-gradient(to right, transparent 30%, rgba(255, 255, 255, .2) 50%, transparent 70%); */
   background-size: 19em 100%;
@@ -61,10 +61,13 @@
 
 @keyframes shudan-busy {
   from {
-    background-position: -19em 0;
+    background-color: transparent;
+  }
+  50% {
+    background-color: rgba(206, 136, 92, 0.3);
   }
   to {
-    background-position: calc(100% + 19em) 0;
+    background-color: transparent;
   }
 }
 

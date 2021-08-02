@@ -66,7 +66,7 @@ export default class App extends preact.Component<Props, State> {
       };
     }
 
-    return preact.h(BoundedGoban, {
+    const goban = preact.h(BoundedGoban, {
       maxWidth: 500,
       maxHeight: 500,
       signMap: SignMap(this.state.board),
@@ -84,6 +84,14 @@ export default class App extends preact.Component<Props, State> {
         this.setBaseState({ board });
       },
     });
+
+    return preact.h(
+      "div",
+      {
+        class: `${this.state.board.data.colorToPlay}-to-play`,
+      },
+      goban,
+    );
   }
 }
 

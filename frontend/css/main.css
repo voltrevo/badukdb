@@ -1,3 +1,19 @@
 body {
   font-family: sans-serif;
 }
+
+.black-to-play .shudan-vertex.shudan-sign_0:hover {
+  background-image: url("./shudan/stone_1.png");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+  opacity: 0.5;
+}
+
+.white-to-play .shudan-vertex.shudan-sign_0:hover {
+  background-image: url("./shudan/stone_-1.png");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+  opacity: 0.5;
+}

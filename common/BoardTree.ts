@@ -46,6 +46,7 @@ export default class BoardTree {
     const child = new BoardTree(0, 0, 0);
     child.board = this.board.clone();
     child.board.play(x, y, color);
+    child.lastMove = { location: { x, y }, color };
 
     child.parent = this;
     this.children.push(child);

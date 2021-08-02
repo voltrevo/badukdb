@@ -74,6 +74,20 @@ export default class App extends preact.Component<Props, State> {
       };
     }
 
+    for (const { lastMove } of this.state.board.children) {
+      const location = lastMove?.location;
+
+      if (location) {
+        const x = location.x - 1;
+        const y = location.y - 1;
+
+        markerMap[y][x] ??= {
+          type: "label",
+          label: "",
+        };
+      }
+    }
+
     const goban = preact.h(BoundedGoban, {
       maxWidth: 500,
       maxHeight: 500,

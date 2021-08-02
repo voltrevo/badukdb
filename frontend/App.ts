@@ -1,4 +1,4 @@
-import BoardClass from "../common/BoardClass.ts";
+import BoardTree from "../common/BoardTree.ts";
 import Protocol, { MoveStat } from "../common/Protocol.ts";
 import { BoundedGoban, preact, tb } from "./deps.ts";
 import { default as SignMap, FillSignMap } from "./SignMap.ts";
@@ -8,7 +8,7 @@ type Props = {
 };
 
 type BaseState = {
-  board: BoardClass;
+  board: BoardTree;
 };
 
 type State = BaseState & {
@@ -21,12 +21,20 @@ export default class App extends preact.Component<Props, State> {
     super(props);
 
     this.setBaseState({});
+
+    window.addEventListener("keydown", (evt) => {
+      if (evt.key === "ArrowLeft") {
+        this.setBaseState({
+          board: this.state.board.parent ?? this.state.board,
+        });
+      }
+    });
   }
 
   setBaseState(baseState: Partial<BaseState>) {
     const priorState: State = this.state ?? {
       id: 0,
-      board: new BoardClass(9, 9, 5.5),
+      board: new BoardTree(9, 9, 5.5),
       moveStats: null,
     };
 
@@ -39,7 +47,7 @@ export default class App extends preact.Component<Props, State> {
       moveStats: null,
     };
 
-    this.props.api.findMoveStats(state.board.Board().hash.value.value)
+    this.props.api.findMoveStats(state.board.board.Board().hash.value.value)
       .then((moveStats) => {
         if (this.state.id === id) {
           this.setState({ moveStats });
@@ -69,7 +77,7 @@ export default class App extends preact.Component<Props, State> {
     const goban = preact.h(BoundedGoban, {
       maxWidth: 500,
       maxHeight: 500,
-      signMap: SignMap(this.state.board),
+      signMap: SignMap(this.state.board.board),
       ghostStoneMap,
       markerMap,
       busy: this.state.moveStats === null,
@@ -78,17 +86,20 @@ export default class App extends preact.Component<Props, State> {
         x++;
         y++;
 
-        const board = this.state.board.clone();
-        board.play(x, y, board.data.colorToPlay);
-
-        this.setBaseState({ board });
+        this.setBaseState({
+          board: this.state.board.play(
+            x,
+            y,
+            this.state.board.board.data.colorToPlay,
+          ),
+        });
       },
     });
 
     return preact.h(
       "div",
       {
-        class: `${this.state.board.data.colorToPlay}-to-play`,
+        class: `${this.state.board.board.data.colorToPlay}-to-play`,
       },
       goban,
     );

@@ -2,11 +2,21 @@ import { tb } from "./deps.ts";
 
 export default class WebSocketBufferIO implements tb.BufferIO {
   queue = new tb.AsyncQueue<Uint8Array>();
+  opened = false;
+  preOpenMessages: Uint8Array[] = [];
 
   constructor(public socket: WebSocket) {
     if (this.socket.readyState === WebSocket.CLOSED) {
       this.queue.close();
     }
+
+    socket.addEventListener("open", () => {
+      this.opened = true;
+
+      for (const msg of this.preOpenMessages) {
+        this.socket.send(msg);
+      }
+    });
 
     socket.addEventListener("close", () => this.queue.close());
 
@@ -24,7 +34,11 @@ export default class WebSocketBufferIO implements tb.BufferIO {
       return; // TODO: Warn?
     }
 
-    await this.socket.send(buffer);
+    if (!this.opened) {
+      this.preOpenMessages.push(buffer);
+    } else {
+      await this.socket.send(buffer);
+    }
   }
 
   async read(): Promise<Uint8Array | null> {

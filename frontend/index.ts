@@ -5,7 +5,6 @@ import WebSocketBufferIO from "../common/WebSocketBufferIO.ts";
 import Protocol from "../common/Protocol.ts";
 import BoardClass from "../common/BoardClass.ts";
 import { default as SignMap, FillSignMap } from "./SignMap.ts";
-import SignFromColor from "./SignFromColor.ts";
 
 const bufferIO = new WebSocketBufferIO(
   new WebSocket(`ws://localhost:${apiPort}/`),
@@ -15,11 +14,29 @@ const boardClass = new BoardClass(9, 9, 5.5);
 
 const api = tb.Client(bufferIO, Protocol);
 
-type GhostStone = {
-  sign: -1 | 0 | 1;
-  type?: "good" | "interesting" | "doubtful" | "bad";
-  faint?: boolean;
-};
+type GhostStone = (
+  | null
+  | {
+    sign: -1 | 0 | 1;
+    type?: "good" | "interesting" | "doubtful" | "bad";
+    faint?: boolean;
+  }
+);
+
+type Marker = (
+  | null
+  | { type: "label"; label: string }
+  | {
+    type: (
+      | "circle"
+      | "cross"
+      | "triangle"
+      | "square"
+      | "point"
+      | "loader"
+    );
+  }
+);
 
 window.addEventListener("load", async () => {
   const moveStats = await api.findMoveStats(
@@ -28,15 +45,19 @@ window.addEventListener("load", async () => {
 
   console.log(moveStats);
 
-  const ghostStoneMap = FillSignMap<GhostStone>(9, 9, { sign: 0 });
+  const markerMap = FillSignMap<Marker>(9, 9, null);
+  const ghostStoneMap = FillSignMap<GhostStone>(9, 9, null);
 
   for (const moveStat of moveStats) {
     if (moveStat.location === null) {
       continue;
     }
 
-    ghostStoneMap[moveStat.location.y - 1][moveStat.location.x - 1] = {
-      sign: SignFromColor(boardClass.data.colorToPlay),
+    const [x, y] = [moveStat.location.x - 1, moveStat.location.y - 1];
+
+    markerMap[y][x] = {
+      type: "label",
+      label: moveStat.count.toString(),
     };
   }
 
@@ -46,6 +67,7 @@ window.addEventListener("load", async () => {
       maxHeight: 500,
       signMap: SignMap(boardClass),
       ghostStoneMap,
+      markerMap,
       showCoordinates: true,
     }),
     globalThis.document.body,

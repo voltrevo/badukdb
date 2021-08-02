@@ -168,7 +168,22 @@ export default class App extends preact.Component<Props, State> {
           }
         }) as ExplicitAny,
       },
-      goban,
+      [
+        goban,
+        preact.h(
+          "div",
+          {},
+          [
+            preact.h(
+              "ul",
+              {},
+              (this.state.moveStats ?? []).map((moveStat) => {
+                return preact.h("li", {}, moveStat.externalIds.join(", "));
+              }),
+            ),
+          ],
+        ),
+      ],
     );
   }
 }

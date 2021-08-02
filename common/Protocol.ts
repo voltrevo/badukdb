@@ -8,6 +8,7 @@ const Location = tb.Object({
 export const MoveStat = tb.Object({
   location: tb.Optional(Location),
   count: tb.number,
+  externalIds: tb.Array(tb.string),
 });
 
 export type MoveStat = tb.TypeOf<typeof MoveStat>;

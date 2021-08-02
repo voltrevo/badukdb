@@ -10,7 +10,10 @@ export default function implementProtocol(
 ): tb.Implementation<typeof Protocol> {
   return {
     findMoveStats: async (boardHash) => {
-      const moveMap = new Map<string, number>();
+      const moveMap = new Map<
+        string,
+        { count: number; externalIds: string[] }
+      >();
       const moves = db.findMoves(BoardHash(constructHash(boardHash)));
 
       for await (const move of moves) {
@@ -18,13 +21,25 @@ export default function implementProtocol(
           ? ""
           : `${move.location.x},${move.location.y}`;
 
-        const count = moveMap.get(key) ?? 0;
-        moveMap.set(key, count + 1);
+        const entry = moveMap.get(key) ?? { count: 0, externalIds: [] };
+        entry.count++;
+
+        const player = await db.lookupPlayer(move.player);
+
+        if (player) {
+          entry.externalIds.push(player.externalId);
+        }
+
+        moveMap.set(key, entry);
       }
 
-      const moveStats: { location: Location | null; count: number }[] = [];
+      const moveStats: {
+        location: Location | null;
+        count: number;
+        externalIds: string[];
+      }[] = [];
 
-      for (const [key, count] of moveMap.entries()) {
+      for (const [key, entry] of moveMap.entries()) {
         const location = (() => {
           if (key === "") {
             return null;
@@ -34,7 +49,10 @@ export default function implementProtocol(
           return { x, y };
         })();
 
-        moveStats.push({ location, count });
+        moveStats.push({
+          location,
+          ...entry,
+        });
       }
 
       return moveStats;

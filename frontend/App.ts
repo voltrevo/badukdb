@@ -1,4 +1,5 @@
 import BoardTree from "../common/BoardTree.ts";
+import type ExplicitAny from "../common/helpers/ExplicitAny.ts";
 import Protocol, { MoveStat } from "../common/Protocol.ts";
 import { BoundedGoban, preact, tb } from "./deps.ts";
 import { default as SignMap, FillSignMap } from "./SignMap.ts";
@@ -9,6 +10,8 @@ type Props = {
 
 type BaseState = {
   board: BoardTree;
+  width?: number;
+  height?: number;
 };
 
 type State = BaseState & {
@@ -17,18 +20,49 @@ type State = BaseState & {
 };
 
 export default class App extends preact.Component<Props, State> {
+  containerRef: HTMLDivElement | null = null;
+  resizeListener: (() => void) | null = null;
+  keydownListener: ((evt: KeyboardEvent) => void) | null = null;
+
   constructor(props: Props) {
     super(props);
 
     this.setBaseState({});
+  }
 
-    window.addEventListener("keydown", (evt) => {
+  componentDidMount() {
+    this.keydownListener = (evt) => {
       if (evt.key === "ArrowLeft") {
         this.setBaseState({
           board: this.state.board.parent ?? this.state.board,
         });
       }
-    });
+    };
+
+    window.addEventListener("keydown", this.keydownListener);
+
+    this.resizeListener = () => {
+      if (this.containerRef) {
+        const rect = this.containerRef.getBoundingClientRect();
+
+        this.setBaseState({
+          width: rect.width,
+          height: rect.height,
+        });
+      }
+    };
+
+    window.addEventListener("resize", this.resizeListener);
+  }
+
+  componentWillUnmount() {
+    if (this.keydownListener) {
+      window.removeEventListener("keydown", this.keydownListener);
+    }
+
+    if (this.resizeListener) {
+      window.removeEventListener("resize", this.resizeListener);
+    }
   }
 
   setBaseState(baseState: Partial<BaseState>) {
@@ -44,15 +78,18 @@ export default class App extends preact.Component<Props, State> {
       ...priorState,
       ...baseState,
       id,
-      moveStats: null,
     };
 
-    this.props.api.findMoveStats(state.board.board.Board().hash.value.value)
-      .then((moveStats) => {
-        if (this.state.id === id) {
-          this.setState({ moveStats });
-        }
-      });
+    if ("board" in baseState || state.moveStats === null) {
+      state.moveStats = null;
+
+      this.props.api.findMoveStats(state.board.board.Board().hash.value.value)
+        .then((moveStats) => {
+          if (this.state.id === id) {
+            this.setState({ moveStats });
+          }
+        });
+    }
 
     this.setState(state);
   }
@@ -94,8 +131,8 @@ export default class App extends preact.Component<Props, State> {
     }
 
     const goban = preact.h(BoundedGoban, {
-      maxWidth: 500,
-      maxHeight: 500,
+      maxWidth: this.state.width ?? 500,
+      maxHeight: this.state.height ?? 500,
       signMap: SignMap(this.state.board.board),
       ghostStoneMap,
       markerMap,
@@ -119,6 +156,17 @@ export default class App extends preact.Component<Props, State> {
       "div",
       {
         class: `${this.state.board.board.data.colorToPlay}-to-play`,
+        style: {
+          width: "100%",
+          height: "100%",
+        },
+        ref: ((el: HTMLDivElement) => {
+          this.containerRef = el;
+
+          if (this.state.width === undefined) {
+            this.resizeListener?.();
+          }
+        }) as ExplicitAny,
       },
       goban,
     );

@@ -4,7 +4,9 @@ type Nominal<Type extends string, Value> = {
 };
 
 function Nominal<Type extends string>(type: Type) {
-  return <Value>() => <V extends Value>(value: V) => ({ type, value });
+  return function <Value>() {
+    return <V extends Value>(value: V) => ({ type, value });
+  };
 }
 
 export default Nominal;

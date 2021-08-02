@@ -14,3 +14,7 @@ export default function SignMap(boardClass: BoardClass) {
       ),
   );
 }
+
+export function FillSignMap<T>(width: number, height: number, value: T) {
+  return Range(height).map(() => Range(width).map(() => value));
+}

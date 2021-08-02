@@ -14,7 +14,9 @@ const boardClass = new BoardClass(9, 9, 5.5);
 
 const api = tb.Client(bufferIO, Protocol);
 
-window.addEventListener("load", () => {
+window.addEventListener("load", async () => {
+  console.log(await api.findMoveStats(boardClass.Board().hash.value.value));
+
   preact.render(
     preact.h(BoundedGoban, {
       maxWidth: 500,
@@ -22,6 +24,6 @@ window.addEventListener("load", () => {
       signMap: SignMap(boardClass),
       showCoordinates: true,
     }),
-    (globalThis as any).document.body,
+    globalThis.document.body,
   );
 });

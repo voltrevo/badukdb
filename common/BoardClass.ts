@@ -48,6 +48,12 @@ export default class BoardClass {
     return { hash, ...this.data };
   }
 
+  clone(): BoardClass {
+    const board = new BoardClass(0, 0, 0);
+    board.data = { ...this.data };
+    return board;
+  }
+
   IndexAndShift(x: number, y: number) {
     this.assertBounds(x, y);
 

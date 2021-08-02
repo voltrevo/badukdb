@@ -74,6 +74,15 @@ export default class App extends preact.Component<Props, State> {
       markerMap,
       busy: this.state.moveStats === null,
       showCoordinates: true,
+      onVertexClick: (_evt: unknown, [x, y]: [number, number]) => {
+        x++;
+        y++;
+
+        const board = this.state.board.clone();
+        board.play(x, y, board.data.colorToPlay);
+
+        this.setBaseState({ board });
+      },
     });
   }
 }

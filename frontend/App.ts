@@ -88,6 +88,11 @@ export default class App extends preact.Component<Props, State> {
       }
     }
 
+    if (this.state.board.lastMove?.location) {
+      const { x, y } = this.state.board.lastMove.location;
+      markerMap[y - 1][x - 1] = { type: "point" };
+    }
+
     const goban = preact.h(BoundedGoban, {
       maxWidth: 500,
       maxHeight: 500,

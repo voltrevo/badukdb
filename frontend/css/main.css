@@ -3,17 +3,39 @@ body {
 }
 
 .black-to-play .shudan-vertex.shudan-sign_0:hover {
-  background-image: url("./shudan/stone_1.png");
+  background-image: url("./shudan/stone_1_faint.png");
   background-repeat: no-repeat;
   background-position: center;
   background-size: contain;
-  opacity: 0.5;
+}
+
+.black-to-play .shudan-marker {
+  color: #eddacc;
+  background-image: url("./shudan/stone_1_very_faint.png");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+}
+
+.black-to-play .shudan-marker::before {
+  background: none;
 }
 
 .white-to-play .shudan-vertex.shudan-sign_0:hover {
-  background-image: url("./shudan/stone_-1.png");
+  background-image: url("./shudan/stone_-1_faint.png");
   background-repeat: no-repeat;
   background-position: center;
   background-size: contain;
-  opacity: 0.5;
+}
+
+.white-to-play .shudan-marker {
+  /* color: white; */
+  background-image: url("./shudan/stone_-1_very_faint.png");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+}
+
+.white-to-play .shudan-marker::before {
+  background: none;
 }

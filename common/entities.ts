@@ -1,4 +1,4 @@
-import { Color } from "./BoardClass.ts";
+import type { Color } from "./BoardClass.ts";
 import Hash from "./Hash.ts";
 import Id from "./Id.ts";
 import Nominal from "./Nominal.ts";

@@ -175,7 +175,7 @@ export default class App extends preact.Component<Props, State> {
               <td>
                 <b>{PrettyLocation(9, moveStat.location)}</b>
               </td>
-              <td>{moveStat.externalIds.join(", ")}</td>
+              <td>{[...new Set(moveStat.externalIds)].join(", ")}</td>
             </tr>;
           })}
         </table>

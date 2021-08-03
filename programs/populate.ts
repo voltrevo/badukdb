@@ -9,9 +9,20 @@ import dataDir from "../backend/dataDir.ts";
 const db = new SQLiteDatabase(`${dataDir}/db.sqlite`);
 
 for await (const raw of RawGameRecords()) {
+  if ("error" in raw) {
+    Deno.stdout.write(new TextEncoder().encode("x"));
+    continue;
+  }
+
+  if ((raw.ogs as Record<string, unknown>).mode === "demo") {
+    Deno.stdout.write(new TextEncoder().encode("d"));
+    continue;
+  }
+
   const game = SimpleGameData(raw);
 
   if (game.outcome === null) {
+    Deno.stdout.write(new TextEncoder().encode("n"));
     continue;
   }
 

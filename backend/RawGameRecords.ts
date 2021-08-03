@@ -3,9 +3,11 @@ import { tb } from "./deps.ts";
 import dataDir from "./dataDir.ts";
 import RawGameRecord from "../common/RawGameRecord.ts";
 
-const gamesDir = `${dataDir}/gamesByPlayerId`;
+const gamesDir = `${dataDir}/ogs/games`;
 
-export default async function* RawGameRecords(): AsyncGenerator<RawGameRecord> {
+export default async function* RawGameRecords(): AsyncGenerator<
+  RawGameRecord | { entryPath: string; error: Error }
+> {
   const dirsToRead = [gamesDir];
 
   while (true) {
@@ -27,7 +29,7 @@ export default async function* RawGameRecords(): AsyncGenerator<RawGameRecord> {
             await Deno.readTextFile(entryPath),
           );
         } catch (e) {
-          console.error(`${entryPath} error: ${e.message}`);
+          yield { entryPath, error: e };
         }
       }
     }

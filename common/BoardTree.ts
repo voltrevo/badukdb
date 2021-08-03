@@ -53,4 +53,22 @@ export default class BoardTree {
 
     return child;
   }
+
+  // TODO: Revise underlying BoardClass
+  playLocation(location: Location | null, color: Color): BoardTree {
+    if (location !== null) {
+      return this.play(location.x, location.y, color);
+    }
+
+    // FIXME: Code duplication
+    const child = new BoardTree(0, 0, 0);
+    child.board = this.board.clone();
+    child.board.pass(color);
+    child.lastMove = { location: null, color };
+
+    child.parent = this;
+    this.children.push(child);
+
+    return child;
+  }
 }

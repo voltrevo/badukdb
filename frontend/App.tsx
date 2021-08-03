@@ -38,6 +38,33 @@ export default class App extends preact.Component<Props, State> {
         this.setBaseState({
           board: this.state.board.parent ?? this.state.board,
         });
+
+        return;
+      }
+
+      if (evt.key === "ArrowRight") {
+        const moveStat = this.state.moveStats?.[0];
+
+        if (moveStat) {
+          this.setBaseState({
+            board: this.state.board.playLocation(
+              moveStat.location,
+              this.state.board.board.data.colorToPlay,
+            ),
+          });
+
+          return;
+        }
+
+        const { children: [child] } = this.state.board;
+
+        if (child) {
+          this.setBaseState({
+            board: child,
+          });
+        }
+
+        return;
       }
     };
 

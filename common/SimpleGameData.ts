@@ -119,6 +119,13 @@ function extractSgfMoves(parsedSgf: ReturnType<typeof parseSgf>) {
 
   let [node] = parsedSgf;
 
+  for (const handicapMove of node.data.AB ?? []) {
+    moves.push({
+      location: Location(handicapMove),
+      color: "black",
+    });
+  }
+
   while (node.children.length > 0) {
     [node] = node.children;
 

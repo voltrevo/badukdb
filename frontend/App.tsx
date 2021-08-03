@@ -1,4 +1,5 @@
 import BoardTree from "../common/BoardTree.ts";
+import PrettyLocation from "../common/PrettyLocation.ts";
 import Protocol, { MoveStat } from "../common/Protocol.ts";
 import { BoundedGoban, preact, preact as React, tb } from "./deps.ts";
 import { default as SignMap, FillSignMap } from "./SignMap.ts";
@@ -168,11 +169,16 @@ export default class App extends preact.Component<Props, State> {
           overflowY: "auto",
         }}
       >
-        <ul>
+        <table>
           {(this.state.moveStats ?? []).map((moveStat) => {
-            return <li>{moveStat.externalIds.join(", ")}</li>;
+            return <tr>
+              <td>
+                <b>{PrettyLocation(9, moveStat.location)}</b>
+              </td>
+              <td>{moveStat.externalIds.join(", ")}</td>
+            </tr>;
           })}
-        </ul>
+        </table>
       </div>
     </div>;
   }

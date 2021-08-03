@@ -16,6 +16,7 @@ const bundlerDevServerPromise = shell.run(
   "--unstable",
   `${bundlerLocation}/spa_server_cli.ts`,
   `${frontendDir}/index.html`,
+  `--config=${frontendDir}/tsconfig.json`,
 );
 
 try {

@@ -1,0 +1,7 @@
+{
+  "compilerOptions": {
+    "jsx": "react",
+    "jsxFactory": "preact.h",
+    "jsxFragmentFactory": "preact.Fragment"
+  }
+}

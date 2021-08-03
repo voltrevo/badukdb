@@ -18,4 +18,5 @@ await shell.run(
   "-L",
   "debug",
   `index.html=index.html`,
+  `--config=${frontendDir}/tsconfig.json`,
 );

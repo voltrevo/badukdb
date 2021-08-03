@@ -27,8 +27,8 @@ function SimpleGameData(game: RawGameRecord) {
 type SimpleGameData = ReturnType<typeof SimpleGameData>;
 
 function MetadataFromOGS(ogs: RawGameRecord["ogs"]) {
-  const blackId = "id" in ogs.players.black ? ogs.players.black : "unknown";
-  const whiteId = "id" in ogs.players.white ? ogs.players.white : "unknown";
+  const blackId = "id" in ogs.players.black ? ogs.players.black.id : "unknown";
+  const whiteId = "id" in ogs.players.white ? ogs.players.white.id : "unknown";
 
   return {
     name: ogs.name,

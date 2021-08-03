@@ -12,7 +12,7 @@ const args = parseCliArgs(Deno.args);
 const [playerId] = args._;
 
 if (typeof playerId !== "number") {
-  console.error("Usage: downloadPlayerGames <player-id>");
+  console.error("Usage: downloadGamesByPlayer <player-id>");
   Deno.exit(1);
 }
 

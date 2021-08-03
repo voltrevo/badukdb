@@ -170,14 +170,21 @@ export default class App extends preact.Component<Props, State> {
         }}
       >
         <table>
-          {(this.state.moveStats ?? []).map((moveStat) => {
-            return <tr>
-              <td>
-                <b>{PrettyLocation(9, moveStat.location)}</b>
-              </td>
-              <td>{renderExternalIds(moveStat.externalIds)}</td>
-            </tr>;
-          })}
+          {(this.state.moveStats ?? [])
+            .sort((a, b) => b.externalIds.length - a.externalIds.length)
+            .map(
+              (moveStat) => {
+                return <tr>
+                  <td>
+                    <b>{PrettyLocation(9, moveStat.location)}</b>
+                  </td>
+                  <td style={{ textAlign: "right" }}>
+                    {moveStat.externalIds.length}
+                  </td>
+                  <td>{renderExternalIds(moveStat.externalIds)}</td>
+                </tr>;
+              },
+            )}
         </table>
       </div>
     </div>;

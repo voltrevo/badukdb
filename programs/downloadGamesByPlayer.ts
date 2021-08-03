@@ -32,5 +32,5 @@ for await (const game of api.Games(playerId)) {
   const filePath = `${playerDir}/${game.id}.json`;
   await Deno.writeTextFile(filePath, JSON.stringify({ ogs: game, sgf }));
 
-  console.log(`Downloaded ${filePath}`);
+  console.log(`Downloaded: ${filePath}`);
 }

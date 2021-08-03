@@ -27,6 +27,9 @@ function SimpleGameData(game: RawGameRecord) {
 type SimpleGameData = ReturnType<typeof SimpleGameData>;
 
 function MetadataFromOGS(ogs: RawGameRecord["ogs"]) {
+  const blackId = "id" in ogs.players.black ? ogs.players.black : "unknown";
+  const whiteId = "id" in ogs.players.white ? ogs.players.white : "unknown";
+
   return {
     name: ogs.name,
     width: ogs.width,
@@ -36,12 +39,12 @@ function MetadataFromOGS(ogs: RawGameRecord["ogs"]) {
     komi: Number(ogs.komi),
     players: {
       black: {
-        externalId: `ogs:player:${ogs.players.black.id}`,
+        externalId: `ogs:player:${blackId}`,
         username: ogs.players.black.username,
         rank: ogs.players.black.ranking,
       },
       white: {
-        externalId: `ogs:player:${ogs.players.white.id}`,
+        externalId: `ogs:player:${whiteId}`,
         username: ogs.players.white.username,
         rank: ogs.players.white.ranking,
       },

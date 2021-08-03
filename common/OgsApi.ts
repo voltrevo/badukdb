@@ -30,7 +30,7 @@ class OgsApi {
     }
 
     if (response.status !== HttpStatus.OK) {
-      console.log(response.status, await response.text());
+      console.error(response.status, await response.text());
       assert(false, "Expected HTTP OK");
     }
 
@@ -40,6 +40,20 @@ class OgsApi {
   }
 
   async get<T>(path: string, type: tb.Bicoder<T>): Promise<T> {
+    const result = await this.getMaybe(path, type);
+
+    if (result === null) {
+      // getMaybe got 404
+      assert(false, "Expected HTTP OK");
+    }
+
+    return result.value;
+  }
+
+  async getMaybe<T>(
+    path: string,
+    type: tb.Bicoder<T>,
+  ): Promise<{ value: T } | null> {
     if (path.startsWith(this.origin)) {
       path = path.slice(this.origin.length);
     }
@@ -47,6 +61,11 @@ class OgsApi {
     assert(path[0] === "/");
 
     const response = await this.fetch(`${this.origin}${path}`);
+
+    if (response.status === HttpStatus.NotFound) {
+      return null;
+    }
+
     assert(response.status === HttpStatus.OK, "Expected HTTP OK");
 
     const contentType = response.headers.get("content-type") ?? "";
@@ -54,7 +73,12 @@ class OgsApi {
 
     const jsonText = await response.text();
 
-    return tb.JSON.parse(type, jsonText);
+    try {
+      return { value: tb.JSON.parse(type, jsonText) };
+    } catch (error) {
+      console.error("unexpected json", jsonText);
+      throw error;
+    }
   }
 
   async *getPaginated<T>(path: string, type: tb.Bicoder<T>): AsyncGenerator<T> {
@@ -78,6 +102,11 @@ class OgsApi {
     }
   }
 
+  async Game(gameId: number): Promise<OgsApi.Game | null> {
+    const result = await this.getMaybe(`/api/v1/games/${gameId}/`, OgsApi.Game);
+    return result && result.value;
+  }
+
   async *Games(playerId: number): AsyncGenerator<OgsApi.Game> {
     yield* this.getPaginated(`/api/v1/players/${playerId}/games/`, OgsApi.Game);
   }
@@ -98,17 +127,26 @@ namespace OgsApi {
     });
   }
 
-  export const Player = tb.Object({
-    id: tb.number,
-    username: tb.string,
-    icon: tb.string,
-    ranking: tb.number,
-  });
+  export const Player = tb.Union(
+    // FIXME: This is clumsy
+    tb.Object({
+      id: tb.number,
+      username: tb.string,
+      icon: tb.string,
+      ranking: tb.number,
+    }),
+    tb.Object({
+      // id: tb.number,
+      username: tb.string,
+      // icon: tb.string,
+      ranking: tb.number,
+    }),
+  );
 
   export const Game = tb.Object({
-    related: tb.Object({
-      detail: tb.string,
-    }),
+    // related: tb.Object({
+    //   detail: tb.string,
+    // }),
     id: tb.number,
     players: tb.Object({
       black: Player,

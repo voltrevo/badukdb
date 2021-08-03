@@ -175,13 +175,28 @@ export default class App extends preact.Component<Props, State> {
               <td>
                 <b>{PrettyLocation(9, moveStat.location)}</b>
               </td>
-              <td>{[...new Set(moveStat.externalIds)].join(", ")}</td>
+              <td>{renderExternalIds(moveStat.externalIds)}</td>
             </tr>;
           })}
         </table>
       </div>
     </div>;
   }
+}
+
+function renderExternalIds(externalIds: string[]) {
+  const counts = new Map<string, number>();
+
+  for (const id of externalIds) {
+    counts.set(id, (counts.get(id) ?? 0) + 1);
+  }
+
+  const pairs = [...counts.entries()].sort(([, a], [, b]) => b - a);
+
+  return pairs.map(([id, count]) => {
+    const suffix = count > 1 ? `(${count})` : "";
+    return `${id}${suffix}`;
+  }).join(", ");
 }
 
 type GhostStone = (

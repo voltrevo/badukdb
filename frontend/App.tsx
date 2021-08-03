@@ -1,7 +1,7 @@
 import BoardTree from "../common/BoardTree.ts";
 import type ExplicitAny from "../common/helpers/ExplicitAny.ts";
 import Protocol, { MoveStat } from "../common/Protocol.ts";
-import { BoundedGoban, preact, tb } from "./deps.ts";
+import { BoundedGoban, preact, preact as React, tb } from "./deps.ts";
 import { default as SignMap, FillSignMap } from "./SignMap.ts";
 
 type Props = {
@@ -152,39 +152,29 @@ export default class App extends preact.Component<Props, State> {
       },
     });
 
-    return preact.h(
-      "div",
-      {
-        class: `${this.state.board.board.data.colorToPlay}-to-play`,
-        style: {
-          width: "100%",
-          height: "100%",
-        },
-        ref: ((el: HTMLDivElement) => {
-          this.containerRef = el;
+    return <div
+      class={`${this.state.board.board.data.colorToPlay}-to-play`}
+      style={{
+        width: "100%",
+        height: "100%",
+      }}
+      ref={((el: HTMLDivElement) => {
+        this.containerRef = el;
 
-          if (this.state.width === undefined) {
-            this.resizeListener?.();
-          }
-        }) as ExplicitAny,
-      },
-      [
-        goban,
-        preact.h(
-          "div",
-          {},
-          [
-            preact.h(
-              "ul",
-              {},
-              (this.state.moveStats ?? []).map((moveStat) => {
-                return preact.h("li", {}, moveStat.externalIds.join(", "));
-              }),
-            ),
-          ],
-        ),
-      ],
-    );
+        if (this.state.width === undefined) {
+          this.resizeListener?.();
+        }
+      }) as ExplicitAny}
+    >
+      {goban}
+      <div>
+        <ul>
+          {(this.state.moveStats ?? []).map((moveStat) => {
+            return <li>{moveStat.externalIds.join(", ")}</li>;
+          })}
+        </ul>
+      </div>
+    </div>;
   }
 }
 

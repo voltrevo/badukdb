@@ -10,6 +10,7 @@
   "editor.formatOnSave": true,
   "editor.defaultFormatter": "denoland.vscode-deno",
   "deno.suggest.imports.hosts": {
-    "https://cdn.skypack.dev": false
+    "https://cdn.skypack.dev": false,
+    "https://esm.sh": false
   }
 }

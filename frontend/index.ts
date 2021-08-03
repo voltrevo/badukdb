@@ -3,7 +3,7 @@ import { preact, tb } from "./deps.ts";
 import { apiPort } from "../common/constants.ts";
 import WebSocketBufferIO from "../common/WebSocketBufferIO.ts";
 import Protocol from "../common/Protocol.ts";
-import App from "./App.ts";
+import App from "./App.tsx";
 
 const bufferIO = new WebSocketBufferIO(
   new WebSocket(`ws://localhost:${apiPort}/`),

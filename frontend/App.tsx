@@ -1,5 +1,4 @@
 import BoardTree from "../common/BoardTree.ts";
-import type ExplicitAny from "../common/helpers/ExplicitAny.ts";
 import Protocol, { MoveStat } from "../common/Protocol.ts";
 import { BoundedGoban, preact, preact as React, tb } from "./deps.ts";
 import { default as SignMap, FillSignMap } from "./SignMap.ts";
@@ -20,14 +19,16 @@ type State = BaseState & {
 };
 
 export default class App extends preact.Component<Props, State> {
-  containerRef: HTMLDivElement | null = null;
   resizeListener: (() => void) | null = null;
   keydownListener: ((evt: KeyboardEvent) => void) | null = null;
 
   constructor(props: Props) {
     super(props);
 
-    this.setBaseState({});
+    this.setBaseState({
+      width: window.innerWidth / 2,
+      height: window.innerHeight,
+    });
   }
 
   componentDidMount() {
@@ -42,14 +43,10 @@ export default class App extends preact.Component<Props, State> {
     window.addEventListener("keydown", this.keydownListener);
 
     this.resizeListener = () => {
-      if (this.containerRef) {
-        const rect = this.containerRef.getBoundingClientRect();
-
-        this.setBaseState({
-          width: rect.width,
-          height: rect.height,
-        });
-      }
+      this.setBaseState({
+        width: window.innerWidth / 2,
+        height: window.innerHeight,
+      });
     };
 
     window.addEventListener("resize", this.resizeListener);
@@ -155,19 +152,22 @@ export default class App extends preact.Component<Props, State> {
     return <div
       class={`${this.state.board.board.data.colorToPlay}-to-play`}
       style={{
-        width: "100%",
-        height: "100%",
+        width: "100vw",
+        height: "100vh",
+        display: "grid",
+        gridTemplateColumns: "50% 50%",
       }}
-      ref={((el: HTMLDivElement) => {
-        this.containerRef = el;
-
-        if (this.state.width === undefined) {
-          this.resizeListener?.();
-        }
-      }) as ExplicitAny}
     >
-      {goban}
-      <div>
+      <div style={{ textAlign: "center" }}>
+        {goban}
+      </div>
+      <div
+        style={{
+          display: "inline-grid",
+          height: "100vh",
+          overflowY: "auto",
+        }}
+      >
         <ul>
           {(this.state.moveStats ?? []).map((moveStat) => {
             return <li>{moveStat.externalIds.join(", ")}</li>;

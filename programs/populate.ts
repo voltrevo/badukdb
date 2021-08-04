@@ -28,7 +28,7 @@ for await (const raw of RawGameRecords()) {
     continue;
   }
 
-  if (`${game.height}x${game.width}` !== "9x9") {
+  if (`${game.height}x${game.width}` !== "19x19") {
     Deno.stdout.write(new TextEncoder().encode("f"));
     continue;
   }

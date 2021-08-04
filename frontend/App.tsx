@@ -4,6 +4,10 @@ import Protocol, { MoveStat } from "../common/Protocol.ts";
 import { BoundedGoban, preact, preact as React, tb } from "./deps.ts";
 import { default as SignMap, FillSignMap } from "./SignMap.ts";
 
+const width = 19;
+const height = 19;
+const komi = 6.5;
+
 type Props = {
   api: tb.Implementation<typeof Protocol>;
 };
@@ -93,7 +97,7 @@ export default class App extends preact.Component<Props, State> {
   setBaseState(baseState: Partial<BaseState>) {
     const priorState: State = this.state ?? {
       id: 0,
-      board: new BoardTree(9, 9, 5.5),
+      board: new BoardTree(width, height, komi),
       moveStats: null,
     };
 
@@ -120,8 +124,8 @@ export default class App extends preact.Component<Props, State> {
   }
 
   render(): preact.ComponentChild {
-    const markerMap = FillSignMap<Marker>(9, 9, null);
-    const ghostStoneMap = FillSignMap<GhostStone>(9, 9, null);
+    const markerMap = FillSignMap<Marker>(width, height, null);
+    const ghostStoneMap = FillSignMap<GhostStone>(width, height, null);
 
     for (const moveStat of this.state.moveStats ?? []) {
       if (moveStat.location === null) {
@@ -203,7 +207,7 @@ export default class App extends preact.Component<Props, State> {
               (moveStat) => {
                 return <tr>
                   <td>
-                    <b>{PrettyLocation(9, moveStat.location)}</b>
+                    <b>{PrettyLocation(width, moveStat.location)}</b>
                   </td>
                   <td style={{ textAlign: "right" }}>
                     {moveStat.externalIds.length}

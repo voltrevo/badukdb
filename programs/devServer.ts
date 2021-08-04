@@ -3,6 +3,7 @@
 import shell from "./helpers/shell.ts";
 import { bundlerLocation, dir as frontendDir } from "../frontend/meta.ts";
 import serveAPI from "../backend/serveAPI.ts";
+import { httpPort } from "../common/constants.ts";
 
 const serveAPIPromise = serveAPI();
 
@@ -17,6 +18,7 @@ const bundlerDevServerPromise = shell.run(
   `${bundlerLocation}/spa_server_cli.ts`,
   `${frontendDir}/index.html`,
   `--config=${frontendDir}/tsconfig.json`,
+  `--port=${httpPort}`,
 );
 
 try {

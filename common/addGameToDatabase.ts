@@ -1,4 +1,5 @@
 import BoardClass from "./BoardClass.ts";
+import { canonicalizeMoves } from "./canonicalization.ts";
 import { GameId, Move, Player, PlayerId } from "./entities.ts";
 import assert from "./helpers/assert.ts";
 import { RandomId } from "./Id.ts";
@@ -33,7 +34,9 @@ export default async function addGameToDatabase(
     }),
   );
 
-  for (const [i, gameMove] of Object.entries(game.moves)) {
+  const moves = canonicalizeMoves(game.width, game.height, game.moves);
+
+  for (const [i, gameMove] of Object.entries(moves)) {
     const board = boardClass.Board();
 
     const move: Move = {

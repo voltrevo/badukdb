@@ -142,14 +142,17 @@ export function Symmetries(width: number, height: number): Symmetry[] {
     ? squareSymmetries
     : rectangularSymmetries;
 
+  const halfWidth = 0.5 * (width + 1);
+  const halfHeight = 0.5 * (height + 1);
+
   const center = ({ x, y }: Location) => ({
-    x: x - (0.5 * width),
-    y: y - (0.5 * height),
+    x: x - halfWidth,
+    y: y - halfHeight,
   });
 
   const uncenter = ({ x, y }: Location) => ({
-    x: x + (0.5 * width),
-    y: y + (0.5 * height),
+    x: x + halfWidth,
+    y: y + halfHeight,
   });
 
   return centeredSymmetries.map(({ name, apply, unapply }) => ({

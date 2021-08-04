@@ -196,7 +196,7 @@ export default class App extends preact.Component<Props, State> {
           overflowY: "auto",
         }}
       >
-        <table>
+        <table class="moves-table">
           {(this.state.moveStats ?? [])
             .sort((a, b) => b.externalIds.length - a.externalIds.length)
             .map(
@@ -227,7 +227,18 @@ function renderExternalIds(externalIds: string[]) {
 
   const pairs = [...counts.entries()].sort(([, a], [, b]) => b - a);
 
-  return pairs.map(([id, count]) => {
+  let topPairs: typeof pairs;
+
+  if (pairs.length > 3) {
+    topPairs = [
+      ...pairs.slice(0, 2),
+      ["other", externalIds.length - pairs[0][1] - pairs[1][1]],
+    ];
+  } else {
+    topPairs = pairs;
+  }
+
+  return topPairs.map(([id, count]) => {
     const suffix = count > 1 ? `(${count})` : "";
     return `${id}${suffix}`;
   }).join(", ");

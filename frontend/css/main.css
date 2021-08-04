@@ -40,3 +40,7 @@ body {
 .white-to-play .shudan-marker::before {
   background: none;
 }
+
+.moves-table {
+  border-spacing: 0.5em;
+}

@@ -23,6 +23,10 @@ type IDatabase = {
   lookupPlayerByExternalId(externalId: string): Promise<Player | null>;
 
   findMoves(board: BoardHash): AsyncGenerator<Move>;
+
+  beginTransaction(): Promise<void>;
+  commit(): Promise<void>;
+  rollback(): Promise<void>;
 };
 
 export default IDatabase;

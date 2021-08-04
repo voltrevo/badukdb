@@ -12,6 +12,10 @@ export default async function addGameToDatabase(
 ) {
   assert(game.outcome !== null);
 
+  const promises: Promise<unknown>[] = [];
+
+  promises.push(db.beginTransaction());
+
   const [blackPlayer, whitePlayer] = await Promise.all([
     ensurePlayer(db, game.players.black.externalId),
     ensurePlayer(db, game.players.white.externalId),
@@ -19,8 +23,6 @@ export default async function addGameToDatabase(
 
   const boardClass = new BoardClass(game.width, game.height, game.komi);
   const gameId = GameId(RandomId());
-
-  const promises: Promise<unknown>[] = [];
 
   promises.push(
     db.insertGame({
@@ -63,6 +65,8 @@ export default async function addGameToDatabase(
 
   // Include the final board position, even though no moves reference it
   promises.push(db.insertBoard(boardClass.Board()));
+
+  promises.push(db.commit());
 
   await Promise.all(promises);
 }

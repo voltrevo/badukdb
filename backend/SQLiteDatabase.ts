@@ -127,6 +127,10 @@ function Queries(db: sqlite.DB) {
     findMoves: db.prepareQuery(`
       SELECT * from moves WHERE board = :board
     `),
+
+    beginTransaction: db.prepareQuery(`BEGIN TRANSACTION`),
+    commit: db.prepareQuery(`COMMIT`),
+    rollback: db.prepareQuery(`ROLLBACK`),
   };
 }
 
@@ -297,5 +301,20 @@ export default class SQLiteDatabase implements IDatabase {
         gameResult: row[7],
       };
     }
+  }
+
+  async beginTransaction() {
+    await Promise.resolve();
+    this.queries.beginTransaction();
+  }
+
+  async commit() {
+    await Promise.resolve();
+    this.queries.commit();
+  }
+
+  async rollback() {
+    await Promise.resolve();
+    this.queries.rollback();
   }
 }

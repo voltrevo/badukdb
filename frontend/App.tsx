@@ -113,7 +113,9 @@ export default class App extends preact.Component<Props, State> {
       state.moveStats = null;
 
       this.props.api.findMoveStats(state.board.board.Board().hash.value.value)
-        .then((moveStats) => {
+        .then(({ moveStats, processingTime }) => {
+          console.log({ processingTime });
+
           if (this.state.id === id) {
             this.setState({ moveStats });
           }

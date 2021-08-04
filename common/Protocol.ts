@@ -14,5 +14,8 @@ export const MoveStat = tb.Object({
 export type MoveStat = tb.TypeOf<typeof MoveStat>;
 
 export default tb.Protocol({
-  findMoveStats: tb.Method(tb.buffer)(tb.Array(MoveStat)),
+  findMoveStats: tb.Method(tb.buffer)(tb.Object({
+    moveStats: tb.Array(MoveStat),
+    processingTime: tb.number,
+  })),
 });

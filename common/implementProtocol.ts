@@ -10,6 +10,8 @@ export default function implementProtocol(
 ): tb.Implementation<typeof Protocol> {
   return {
     findMoveStats: async (boardHash) => {
+      const startTime = performance.now();
+
       const moveMap = new Map<
         string,
         { count: number; externalIds: string[] }
@@ -55,7 +57,10 @@ export default function implementProtocol(
         });
       }
 
-      return moveStats;
+      return {
+        moveStats,
+        processingTime: performance.now() - startTime,
+      };
     },
   };
 }

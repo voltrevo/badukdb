@@ -1,3 +1,4 @@
+import { Color } from "../common/BoardClass.ts";
 import BoardTree from "../common/BoardTree.ts";
 import PrettyLocation from "../common/PrettyLocation.ts";
 import Protocol, { MoveStat } from "../common/Protocol.ts";
@@ -136,9 +137,13 @@ export default class App extends preact.Component<Props, State> {
 
       const [x, y] = [moveStat.location.x - 1, moveStat.location.y - 1];
 
+      const sidedResult = moveStat.color === "black"
+        ? moveStat.result
+        : moveStat.count - moveStat.result;
+
       markerMap[y][x] = {
         type: "label",
-        label: moveStat.count.toString(),
+        label: `${sidedResult}/${moveStat.count}`,
       };
     }
 
@@ -204,7 +209,7 @@ export default class App extends preact.Component<Props, State> {
       >
         <table class="moves-table">
           {(this.state.moveStats ?? [])
-            .sort((a, b) => b.externalIds.length - a.externalIds.length)
+            .sort((a, b) => b.count - a.count)
             .map(
               (moveStat) => {
                 return <tr>
@@ -212,9 +217,14 @@ export default class App extends preact.Component<Props, State> {
                     <b>{PrettyLocation(width, moveStat.location)}</b>
                   </td>
                   <td style={{ textAlign: "right" }}>
-                    {moveStat.externalIds.length}
+                    {
+                      // FIXME: duplication
+                      moveStat.color === "black"
+                        ? moveStat.result
+                        : moveStat.count - moveStat.result
+                    }/{moveStat.count}
                   </td>
-                  <td>{renderExternalIds(moveStat.externalIds)}</td>
+                  <td>{renderDetail(moveStat.color, moveStat.detail)}</td>
                 </tr>;
               },
             )}
@@ -224,30 +234,29 @@ export default class App extends preact.Component<Props, State> {
   }
 }
 
-function renderExternalIds(externalIds: string[]) {
+function renderDetail(
+  color: Color,
+  detail: MoveStat["detail"],
+): preact.JSX.Element {
+  if (detail === null) {
+    return <></>;
+  }
+
   const counts = new Map<string, number>();
 
-  for (const id of externalIds) {
-    counts.set(id, (counts.get(id) ?? 0) + 1);
-  }
+  return <>
+    {detail.map(({ result, externalId }): preact.JSX.Element => {
+      const sidedResult = color === "black" ? result : 1 - result;
 
-  const pairs = [...counts.entries()].sort(([, a], [, b]) => b - a);
+      const renderColor = sidedResult === 0
+        ? "red"
+        : sidedResult === 1
+        ? "green"
+        : "black";
 
-  let topPairs: typeof pairs;
-
-  if (pairs.length > 3) {
-    topPairs = [
-      ...pairs.slice(0, 2),
-      ["other", externalIds.length - pairs[0][1] - pairs[1][1]],
-    ];
-  } else {
-    topPairs = pairs;
-  }
-
-  return topPairs.map(([id, count]) => {
-    const suffix = count > 1 ? `(${count})` : "";
-    return `${id}${suffix}`;
-  }).join(", ");
+      return <span style={{ color: renderColor }}>{externalId}</span>;
+    })}
+  </>;
 }
 
 type GhostStone = (

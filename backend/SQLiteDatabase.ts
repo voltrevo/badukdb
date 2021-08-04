@@ -36,6 +36,14 @@ function createTablesIfNotExisting(db: sqlite.DB) {
     );
   `);
 
+  // db.query(`
+  //   CREATE TABLE IF NOT EXISTS popularBoards (
+  //     hash BLOB PRIMARY KEY,
+  //     version INTEGER NOT NULL,
+  //     data BLOB NOT NULL,
+  //   );
+  // `);
+
   db.query(`
     CREATE TABLE IF NOT EXISTS moves (
       game BLOB NOT NULL,

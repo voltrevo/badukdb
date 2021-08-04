@@ -9,13 +9,8 @@ function LocationScore(
   color: Color,
   location: Location,
 ) {
-  let { x, y } = location;
-
-  if (color === "white") {
-    y = -y;
-  }
-
-  return 2 * x - y;
+  const { x, y } = location;
+  return color === "black" ? 2 * x - y : x + 2 * y;
 }
 
 export function canonicalizeMoves(

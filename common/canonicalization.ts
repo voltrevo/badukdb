@@ -1,15 +1,61 @@
+import { Color } from "./BoardClass.ts";
 import { Location } from "./entities.ts";
+import assert from "./helpers/assert.ts";
 import SimpleGameData from "./SimpleGameData.ts";
 
 type Move = SimpleGameData["moves"][0];
 
-// export function canonicalizeMoves(
-//   width: number,
-//   height: number,
-//   moves: Move[],
-// ): Move[] {
-//   // const
-// }
+function LocationScore(
+  color: Color,
+  location: Location,
+) {
+  let { x, y } = location;
+
+  if (color === "white") {
+    y = -y;
+  }
+
+  return 2 * x + y;
+}
+
+export function canonicalizeMoves(
+  width: number,
+  height: number,
+  moves: Move[],
+): Move[] {
+  let symmetries = Symmetries(width, height);
+
+  for (const move of moves) {
+    const location = move.location;
+
+    if (location === null) {
+      continue;
+    }
+
+    const scores = symmetries.map((sym) =>
+      LocationScore(move.color, sym.apply(location))
+    );
+
+    const bestScore = scores.reduce((a, b) => Math.max(a, b));
+
+    symmetries = symmetries.filter((sym) =>
+      LocationScore(move.color, sym.apply(location)) === bestScore
+    );
+
+    assert(symmetries.length >= 1);
+
+    if (symmetries.length === 1) {
+      break;
+    }
+  }
+
+  const [sym] = symmetries;
+
+  return moves.map((move) => ({
+    location: move.location && sym.apply(move.location),
+    color: move.color,
+  }));
+}
 
 const symmetryNameSet = {
   identity: true,
@@ -92,22 +138,19 @@ const squareSymmetries: Symmetry[] = [
 ];
 
 export function Symmetries(width: number, height: number): Symmetry[] {
-  const halfWidth = 0.5 * width;
-  const halfHeight = 0.5 * height;
-
-  const center = ({ x, y }: Location) => ({
-    x: x - halfWidth,
-    y: y - halfHeight,
-  });
-
-  const uncenter = ({ x, y }: Location) => ({
-    x: x + halfWidth,
-    y: y + halfHeight,
-  });
-
   const centeredSymmetries = width === height
     ? squareSymmetries
     : rectangularSymmetries;
+
+  const center = ({ x, y }: Location) => ({
+    x: x - (0.5 * width),
+    y: y - (0.5 * height),
+  });
+
+  const uncenter = ({ x, y }: Location) => ({
+    x: x + (0.5 * width),
+    y: y + (0.5 * height),
+  });
 
   return centeredSymmetries.map(({ name, apply, unapply }) => ({
     name,

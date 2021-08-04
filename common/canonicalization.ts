@@ -15,7 +15,7 @@ function LocationScore(
     y = -y;
   }
 
-  return 2 * x + y;
+  return 2 * x - y;
 }
 
 export function canonicalizeMoves(

@@ -43,50 +43,8 @@ for await (const raw of RawGameRecords()) {
 
   const game = SimpleGameData(raw);
 
-  if (game.outcome === null) {
-    Deno.stdout.write(new TextEncoder().encode("n"));
+  if (!ShouldInclude(game)) {
     continue;
-  }
-
-  if (excludeBots) {
-    if (
-      externalBotIds.includes(game.players.black.externalId) ||
-      externalBotIds.includes(game.players.white.externalId)
-    ) {
-      Deno.stdout.write(new TextEncoder().encode("b"));
-      continue;
-    }
-  }
-
-  if (sizeFilter !== null && `${game.height}x${game.width}` !== sizeFilter) {
-    Deno.stdout.write(new TextEncoder().encode("z"));
-    continue;
-  }
-
-  if (!game.ranked) {
-    Deno.stdout.write(new TextEncoder().encode("r"));
-    continue;
-  }
-
-  for (const player of [game.players.black, game.players.white]) {
-    if (player.ratingStdev > maxRatingStdev) {
-      Deno.stdout.write(new TextEncoder().encode("s"));
-      continue;
-    }
-  }
-
-  if (liveOnly && game.speed !== "live") {
-    Deno.stdout.write(new TextEncoder().encode("l"));
-    continue;
-  }
-
-  if (filterOnRank) {
-    for (const player of [game.players.black, game.players.white]) {
-      if (Math.abs(player.rank - rankFilterCenter) > rankFilterWidth) {
-        Deno.stdout.write(new TextEncoder().encode("r"));
-        continue;
-      }
-    }
   }
 
   await addGameToDatabase(db, game);
@@ -103,3 +61,53 @@ for await (const raw of RawGameRecords()) {
 }
 
 console.log(`\nCreated ${filePath} with ${count} games`);
+
+function ShouldInclude(game: SimpleGameData): boolean {
+  if (game.outcome === null) {
+    Deno.stdout.write(new TextEncoder().encode("n"));
+    return false;
+  }
+
+  if (excludeBots) {
+    if (
+      externalBotIds.includes(game.players.black.externalId) ||
+      externalBotIds.includes(game.players.white.externalId)
+    ) {
+      Deno.stdout.write(new TextEncoder().encode("b"));
+      return false;
+    }
+  }
+
+  if (sizeFilter !== null && `${game.height}x${game.width}` !== sizeFilter) {
+    Deno.stdout.write(new TextEncoder().encode("z"));
+    return false;
+  }
+
+  if (!game.ranked) {
+    Deno.stdout.write(new TextEncoder().encode("r"));
+    return false;
+  }
+
+  for (const player of [game.players.black, game.players.white]) {
+    if (player.ratingStdev > maxRatingStdev) {
+      Deno.stdout.write(new TextEncoder().encode("s"));
+      return false;
+    }
+  }
+
+  if (liveOnly && game.speed !== "live") {
+    Deno.stdout.write(new TextEncoder().encode("l"));
+    return false;
+  }
+
+  if (filterOnRank) {
+    for (const player of [game.players.black, game.players.white]) {
+      if (Math.abs(player.rank - rankFilterCenter) > rankFilterWidth) {
+        Deno.stdout.write(new TextEncoder().encode("r"));
+        return false;
+      }
+    }
+  }
+
+  return true;
+}

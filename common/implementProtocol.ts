@@ -75,6 +75,7 @@ export default function implementProtocol(
           location,
           color,
           ...entry,
+          detail: entry.detail.length > 10 ? null : entry.detail,
         });
       }
 

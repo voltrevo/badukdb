@@ -1,4 +1,5 @@
 import type { Color } from "./BoardClass.ts";
+import { tb } from "./deps.ts";
 import Hash from "./Hash.ts";
 import Id from "./Id.ts";
 import Nominal from "./Nominal.ts";
@@ -15,7 +16,12 @@ export type BoardHash = ReturnType<typeof BoardHash>;
 export const Time = Nominal("Time")<number>();
 export type Time = ReturnType<typeof Time>;
 
-export type Location = { x: number; y: number };
+export const Location = tb.Object({
+  x: tb.number,
+  y: tb.number,
+});
+
+export type Location = tb.TypeOf<typeof Location>;
 
 export type Game = {
   id: GameId;

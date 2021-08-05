@@ -12,7 +12,10 @@ import {
 
 import { constructHash } from "../common/Hash.ts";
 import Id from "../common/Id.ts";
-import IDatabase from "../common/IDatabase.ts";
+import IDatabase, {
+  PopularBoardData,
+  popularBoardDataVersion,
+} from "../common/IDatabase.ts";
 
 function createTablesIfNotExisting(db: sqlite.DB) {
   db.query(`
@@ -36,13 +39,13 @@ function createTablesIfNotExisting(db: sqlite.DB) {
     );
   `);
 
-  // db.query(`
-  //   CREATE TABLE IF NOT EXISTS popularBoards (
-  //     hash BLOB PRIMARY KEY,
-  //     version INTEGER NOT NULL,
-  //     data BLOB NOT NULL,
-  //   );
-  // `);
+  db.query(`
+    CREATE TABLE IF NOT EXISTS popularBoardData (
+      hash BLOB PRIMARY KEY,
+      version INTEGER NOT NULL,
+      data BLOB NOT NULL,
+    );
+  `);
 
   // FIXME: color is INTEGER but we manage to store and retrieve it as a string
   // 🤯🤯🤯
@@ -100,6 +103,18 @@ function Queries(db: sqlite.DB) {
 
     lookupBoard: db.prepareQuery(`
       SELECT * FROM boards WHERE hash = :hash LIMIT 1
+    `),
+
+    insertPopularBoardData: db.prepareQuery(`
+      INSERT OR REPLACE INTO popularBoardData (
+        hash, version, data
+      ) VALUES (
+        :hash, :version, :data
+      )
+    `),
+
+    lookupPopularBoardData: db.prepareQuery(`
+      SELECT * FROM popularBoardData WHERE hash = :hash LIMIT 1
     `),
 
     insertMove: db.prepareQuery(`
@@ -214,6 +229,41 @@ export default class SQLiteDatabase implements IDatabase {
       height: row[4],
       content: row[5],
     };
+  }
+
+  async insertPopularBoardData(
+    hash: BoardHash,
+    data: PopularBoardData,
+  ): Promise<void> {
+    await Promise.resolve();
+
+    this.queries.insertPopularBoardData({
+      ":hash": hash.value.value,
+      ":version": popularBoardDataVersion,
+      ":data": PopularBoardData.encode(data),
+    });
+  }
+
+  async lookupPopularBoardData(
+    hash: BoardHash,
+  ): Promise<PopularBoardData | null> {
+    await Promise.resolve();
+
+    const [row] = this.queries.lookupPopularBoardData({
+      ":hash": hash.value.value,
+    });
+
+    if (row === undefined) {
+      return null;
+    }
+
+    const [, version, data] = row;
+
+    if (version !== popularBoardDataVersion) {
+      return null;
+    }
+
+    return PopularBoardData.decode(data);
   }
 
   async insertMove(move: Move): Promise<void> {

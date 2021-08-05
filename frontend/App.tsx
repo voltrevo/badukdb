@@ -1,7 +1,8 @@
 import { Color } from "../common/BoardClass.ts";
 import BoardTree from "../common/BoardTree.ts";
+import { MoveStat } from "../common/IDatabase.ts";
 import PrettyLocation from "../common/PrettyLocation.ts";
-import Protocol, { MoveStat } from "../common/Protocol.ts";
+import Protocol from "../common/Protocol.ts";
 import { BoundedGoban, preact, preact as React, tb } from "./deps.ts";
 import { default as SignMap, FillSignMap } from "./SignMap.ts";
 

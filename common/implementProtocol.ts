@@ -3,8 +3,8 @@ import { tb } from "./deps.ts";
 import { BoardHash } from "./entities.ts";
 import { constructHash } from "./Hash.ts";
 import fail from "./helpers/fail.ts";
-import IDatabase from "./IDatabase.ts";
-import Protocol, { MoveStat } from "./Protocol.ts";
+import IDatabase, { MoveStat } from "./IDatabase.ts";
+import Protocol from "./Protocol.ts";
 
 type MoveStatEntry = {
   result: number;

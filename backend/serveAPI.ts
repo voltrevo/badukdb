@@ -8,7 +8,9 @@ import Protocol from "../common/Protocol.ts";
 import DenoWebSocketBufferIO from "./DenoWebSocketBufferIO.ts";
 
 export default async function serve() {
-  const db = new SQLiteDatabase(`${dataDir}/${dbFilename}`);
+  const dbFilePath = `${dataDir}/${dbFilename}`;
+  console.log(`Loading ${dbFilePath}`);
+  const db = new SQLiteDatabase(dbFilePath);
   const protocolImpl = implementProtocol(db);
 
   for await (const req of serveHttp(`127.0.0.1:${apiPort}`)) {

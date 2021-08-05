@@ -43,7 +43,7 @@ function createTablesIfNotExisting(db: sqlite.DB) {
     CREATE TABLE IF NOT EXISTS popularBoardData (
       hash BLOB PRIMARY KEY,
       version INTEGER NOT NULL,
-      data BLOB NOT NULL,
+      data BLOB NOT NULL
     );
   `);
 
@@ -279,6 +279,8 @@ export default class SQLiteDatabase implements IDatabase {
       ":player": move.player.value.value,
       ":gameResult": move.gameResult,
     });
+
+    // TODO: Update popularBoardData?
   }
 
   async lookupMove(game: GameId, number: number): Promise<Move | null> {

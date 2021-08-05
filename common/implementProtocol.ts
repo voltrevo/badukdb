@@ -19,14 +19,28 @@ export default function implementProtocol(
   db: IDatabase,
 ): tb.Implementation<typeof Protocol> {
   return {
-    findMoveStats: async (boardHash) => {
+    findMoveStats: async (boardHashRaw) => {
       const startTime = performance.now();
+
+      const boardHash = BoardHash(constructHash(boardHashRaw));
+
+      const popularMoveStats = await db.lookupPopularBoardData(boardHash);
+
+      if (popularMoveStats !== null) {
+        return {
+          moveStats: popularMoveStats,
+          processingTime: performance.now() - startTime,
+        };
+      }
 
       const moveMap = new Map<string, MoveStatEntry>();
 
-      const moves = db.findMoves(BoardHash(constructHash(boardHash)));
+      const moves = db.findMoves(boardHash);
+      let moveCount = 0;
 
       for await (const move of moves) {
+        moveCount++;
+
         const locationKey = move.location === null
           ? ""
           : `${move.location.x},${move.location.y}`;
@@ -77,6 +91,10 @@ export default function implementProtocol(
           ...entry,
           detail: entry.detail.length > 10 ? null : entry.detail,
         });
+      }
+
+      if (moveCount >= 100) {
+        await db.insertPopularBoardData(boardHash, moveStats);
       }
 
       return {

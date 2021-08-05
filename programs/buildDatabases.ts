@@ -1,4 +1,6 @@
-#!/usr/bin/env -S deno run --allow-env --allow-read --allow-write
+#!/usr/bin/env -S deno run --unstable --allow-env --allow-read --allow-write
+
+import * as fs from "https://deno.land/std@0.103.0/fs/mod.ts";
 
 import { tb } from "../backend/deps.ts";
 
@@ -31,6 +33,7 @@ type DbAndMeta = {
 const dbMetamap = new Map<string, DbAndMeta>();
 
 const dir = `${dataDir}/databases/${Date.now()}`;
+await fs.ensureDir(dir);
 
 let count = 0;
 let totalCount = 0;

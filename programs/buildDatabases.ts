@@ -76,6 +76,8 @@ for await (const raw of RawGameRecords()) {
   Deno.stdout.write(new TextEncoder().encode("."));
   count++;
 
+  await writeIndex();
+
   if (Math.floor(totalCount / 1000) > reports) {
     console.log(
       `\n${performance.now() - startTime}ms: ${count}/${totalCount}\n`,
@@ -168,4 +170,15 @@ function allocate(game: SimpleGameData): DbAndMeta | null {
   };
 
   return dbAndMeta;
+}
+
+async function writeIndex() {
+  await Deno.writeFile(
+    `${dir}/index.json`,
+    new TextEncoder().encode(JSON.stringify(
+      [...dbMetamap.values()].map(({ meta }) => meta),
+      null,
+      2,
+    )),
+  );
 }

@@ -33,8 +33,15 @@ export default class App extends preact.Component<Props, State> {
     super(props);
 
     this.setBaseState({
-      width: window.innerWidth / 2,
-      height: window.innerHeight,
+      width: window.innerWidth * 0.7,
+      height: window.innerHeight - 0.0001,
+    });
+
+    setTimeout(() => {
+      this.setBaseState({
+        width: window.innerWidth * 0.7,
+        height: window.innerHeight,
+      });
     });
   }
 
@@ -78,7 +85,7 @@ export default class App extends preact.Component<Props, State> {
 
     this.resizeListener = () => {
       this.setBaseState({
-        width: window.innerWidth / 2,
+        width: window.innerWidth * 0.7,
         height: window.innerHeight,
       });
     };
@@ -199,7 +206,7 @@ export default class App extends preact.Component<Props, State> {
         width: "100vw",
         height: "100vh",
         display: "grid",
-        gridTemplateColumns: "50% 50%",
+        gridTemplateColumns: "70% 30%",
       }}
     >
       <div style={{ textAlign: "center" }}>

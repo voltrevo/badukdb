@@ -5,7 +5,9 @@ import RawGameRecord from "../common/RawGameRecord.ts";
 
 const gamesDir = `${dataDir}/ogs/games`;
 
-export default async function* RawGameRecords(): AsyncGenerator<
+export default async function* RawGameRecords(
+  filter: (filePath: string) => boolean = () => true,
+): AsyncGenerator<
   RawGameRecord | { entryPath: string; error: Error }
 > {
   const dirsToRead = [gamesDir];
@@ -23,13 +25,15 @@ export default async function* RawGameRecords(): AsyncGenerator<
       if (entry.isDirectory) {
         dirsToRead.push(entryPath);
       } else if (entryPath.endsWith(".json")) {
-        try {
-          yield tb.JSON.parse(
-            RawGameRecord,
-            await Deno.readTextFile(entryPath),
-          );
-        } catch (e) {
-          yield { entryPath, error: e };
+        if (filter(entryPath)) {
+          try {
+            yield tb.JSON.parse(
+              RawGameRecord,
+              await Deno.readTextFile(entryPath),
+            );
+          } catch (e) {
+            yield { entryPath, error: e };
+          }
         }
       }
     }

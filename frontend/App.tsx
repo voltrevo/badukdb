@@ -6,9 +6,9 @@ import Protocol from "../common/Protocol.ts";
 import { BoundedGoban, preact, preact as React, tb } from "./deps.ts";
 import { default as SignMap, FillSignMap } from "./SignMap.ts";
 
-const width = 19;
-const height = 19;
-const komi = 6.5;
+const width = 9;
+const height = 9;
+const komi = 5.5;
 
 type Props = {
   api: tb.Implementation<typeof Protocol>;

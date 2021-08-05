@@ -141,9 +141,13 @@ export default class App extends preact.Component<Props, State> {
         ? moveStat.result
         : moveStat.count - moveStat.result;
 
+      const winRate = `${Math.round(100 * sidedResult / moveStat.count)}%`;
+
       markerMap[y][x] = {
         type: "label",
-        label: `${sidedResult}/${moveStat.count}`,
+        label: moveStat.count > 9
+          ? winRate
+          : `${sidedResult}/${moveStat.count}`,
       };
     }
 

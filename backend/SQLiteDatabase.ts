@@ -44,6 +44,8 @@ function createTablesIfNotExisting(db: sqlite.DB) {
   //   );
   // `);
 
+  // FIXME: color is INTEGER but we manage to store and retrieve it as a string
+  // 🤯🤯🤯
   db.query(`
     CREATE TABLE IF NOT EXISTS moves (
       game BLOB NOT NULL,
@@ -304,7 +306,7 @@ export default class SQLiteDatabase implements IDatabase {
         number: row[1],
         board: BoardHash(constructHash(row[2])),
         location: row[3] === null ? null : { x: row[3], y: row[4] },
-        color: row[5] === 0 ? "black" as const : "white" as const,
+        color: row[5] === "black" ? "black" as const : "white" as const,
         player: PlayerId(Id(row[6])),
         gameResult: row[7],
       };

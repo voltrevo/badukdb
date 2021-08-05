@@ -14,8 +14,6 @@ type OutcomeDetail = (
 function SimpleGameData(game: RawGameRecord) {
   const metadata = MetadataFromOGS(game.ogs);
 
-  // TODO: handicap moves
-
   const moves = extractSgfMoves(parseSgf(game.sgf));
 
   return {
@@ -36,6 +34,7 @@ function MetadataFromOGS(ogs: RawGameRecord["ogs"]) {
     height: ogs.height,
     externalId: `ogs:game:${ogs.id}`,
     ranked: ogs.ranked,
+    speed: ogs.gamedata.time_control.speed,
     komi: Number(ogs.komi),
     players: {
       black: {
@@ -44,6 +43,7 @@ function MetadataFromOGS(ogs: RawGameRecord["ogs"]) {
         rank: RankFromRating(
           ogs.historical_ratings.black.ratings.overall.rating,
         ),
+        ratingStdev: ogs.historical_ratings.black.ratings.overall.deviation,
       },
       white: {
         externalId: `ogs:player:${whiteId}`,
@@ -51,6 +51,7 @@ function MetadataFromOGS(ogs: RawGameRecord["ogs"]) {
         rank: RankFromRating(
           ogs.historical_ratings.white.ratings.overall.rating,
         ),
+        ratingStdev: ogs.historical_ratings.white.ratings.overall.deviation,
       },
     },
     outcome: (() => {

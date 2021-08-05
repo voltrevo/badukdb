@@ -188,6 +188,11 @@ namespace OgsApi {
       black: HistoricalPlayer,
       white: HistoricalPlayer,
     }),
+    gamedata: tb.Object({
+      time_control: tb.Object({
+        speed: tb.string,
+      }),
+    }),
   });
 
   export type Game = tb.TypeOf<typeof Game>;

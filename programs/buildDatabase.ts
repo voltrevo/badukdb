@@ -18,7 +18,7 @@ const excludeBots = true;
 
 // Exclude players without an accurate rank. For new players this value is 350
 // but it comes down quickly and most regular players are around 60.
-const maxEloStdev = 100;
+const maxRatingStdev = 100;
 
 const filterOnRank = true;
 const rankFilterCenter = 22; // 8kyu
@@ -66,20 +66,26 @@ for await (const raw of RawGameRecords()) {
     continue;
   }
 
-  // const rankGap = game.players.white.rank - game.players.black.rank;
+  for (const player of [game.players.black, game.players.white]) {
+    if (player.ratingStdev > maxRatingStdev) {
+      Deno.stdout.write(new TextEncoder().encode("s"));
+      continue;
+    }
+  }
 
-  // if (Math.abs(rankGap) > 2.5) {
-  //   Deno.stdout.write(new TextEncoder().encode("f"));
-  //   continue;
-  // }
+  if (liveOnly && game.speed !== "live") {
+    Deno.stdout.write(new TextEncoder().encode("l"));
+    continue;
+  }
 
-  // const meanRank = 0.5 * (game.players.white.rank + game.players.black.rank);
-  // const kyu8 = 22;
-
-  // if (Math.abs(meanRank - kyu8) > 1.5) {
-  //   Deno.stdout.write(new TextEncoder().encode("f"));
-  //   continue;
-  // }
+  if (filterOnRank) {
+    for (const player of [game.players.black, game.players.white]) {
+      if (Math.abs(player.rank - rankFilterCenter) > rankFilterWidth) {
+        Deno.stdout.write(new TextEncoder().encode("r"));
+        continue;
+      }
+    }
+  }
 
   await addGameToDatabase(db, game);
   Deno.stdout.write(new TextEncoder().encode("."));

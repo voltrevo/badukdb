@@ -55,4 +55,7 @@ type IDatabase = {
   rollback(): Promise<void>;
 };
 
+// Bundler workaround
+const IDatabase = undefined;
+
 export default IDatabase;

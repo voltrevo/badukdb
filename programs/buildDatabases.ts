@@ -48,7 +48,10 @@ const maxRankDiff = 3;
 
 const liveOnly = true; // Not correspondence
 
-for await (const raw of RawGameRecords()) {
+const sampleRatio = 0.05;
+const rawGameRecords = RawGameRecords(() => Math.random() < sampleRatio);
+
+for await (const raw of rawGameRecords) {
   totalCount++;
 
   if ("error" in raw) {

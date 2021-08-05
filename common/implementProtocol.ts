@@ -29,7 +29,7 @@ export default function implementProtocol(
       for await (const move of moves) {
         const locationKey = move.location === null
           ? ""
-          : `${move.color}:${move.location.x},${move.location.y}`;
+          : `${move.location.x},${move.location.y}`;
 
         const key = `${move.color}:${locationKey}`;
 

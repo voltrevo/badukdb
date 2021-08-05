@@ -51,8 +51,6 @@ function renderDetail(
     return <></>;
   }
 
-  const counts = new Map<string, number>();
-
   return <>
     {detail.map(({ result, externalId }, i): preact.JSX.Element => {
       const sidedResult = color === "black" ? result : 1 - result;

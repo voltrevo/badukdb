@@ -213,11 +213,20 @@ export default class App extends preact.Component<Props, State> {
       </div>
       <div
         style={{
-          display: "inline-grid",
           height: "100vh",
           overflowY: "auto",
+          padding: "0.5em",
         }}
       >
+        <iframe
+          src="https://ghbtns.com/github-btn.html?user=voltrevo&repo=badukdb&type=star&count=true&size=large"
+          style={{ border: "0", margin: "1em 0" }}
+          scrolling="0"
+          width="170"
+          height="30"
+          title="GitHub"
+        >
+        </iframe>
         <MovesTable
           moveStats={this.state.moveStats}
           width={this.state.board.board.data.width}

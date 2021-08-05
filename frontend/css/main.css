@@ -3,6 +3,10 @@ body {
   margin: 0;
 }
 
+* {
+  box-sizing: border-box;
+}
+
 .black-to-play .shudan-vertex.shudan-sign_0:hover {
   background-image: url("./shudan/stone_1_faint.png");
   background-repeat: no-repeat;

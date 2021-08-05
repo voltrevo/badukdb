@@ -26,6 +26,8 @@ const rankFilterWidth = 3; // +/- 1.5
 
 const liveOnly = true; // Not correspondence
 
+const sizeFilter = "9x9";
+
 for await (const raw of RawGameRecords()) {
   totalCount++;
 
@@ -56,13 +58,13 @@ for await (const raw of RawGameRecords()) {
     }
   }
 
-  // if (`${game.height}x${game.width}` !== "19x19") {
-  //   Deno.stdout.write(new TextEncoder().encode("f"));
-  //   continue;
-  // }
+  if (sizeFilter !== null && `${game.height}x${game.width}` !== sizeFilter) {
+    Deno.stdout.write(new TextEncoder().encode("z"));
+    continue;
+  }
 
   if (!game.ranked) {
-    Deno.stdout.write(new TextEncoder().encode("f"));
+    Deno.stdout.write(new TextEncoder().encode("r"));
     continue;
   }
 

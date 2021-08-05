@@ -1,8 +1,7 @@
-import { Color } from "../common/BoardClass.ts";
 import BoardTree from "../common/BoardTree.ts";
 import { MoveStat } from "../common/IDatabase.ts";
-import PrettyLocation from "../common/PrettyLocation.ts";
 import Protocol from "../common/Protocol.ts";
+import MovesTable from "./components/MovesTable.tsx";
 import { BoundedGoban, preact, preact as React, tb } from "./deps.ts";
 import { default as SignMap, FillSignMap } from "./SignMap.ts";
 
@@ -219,59 +218,13 @@ export default class App extends preact.Component<Props, State> {
           overflowY: "auto",
         }}
       >
-        <table class="moves-table">
-          {(this.state.moveStats ?? [])
-            .sort((a, b) => b.count - a.count)
-            .map(
-              (moveStat) => {
-                return <tr>
-                  <td>
-                    <b>{PrettyLocation(width, moveStat.location)}</b>
-                  </td>
-                  <td style={{ textAlign: "right" }}>
-                    {
-                      // FIXME: duplication
-                      moveStat.color === "black"
-                        ? moveStat.result
-                        : moveStat.count - moveStat.result
-                    }/{moveStat.count}
-                  </td>
-                  <td>{renderDetail(moveStat.color, moveStat.detail)}</td>
-                </tr>;
-              },
-            )}
-        </table>
+        <MovesTable
+          moveStats={this.state.moveStats}
+          width={this.state.board.board.data.width}
+        />
       </div>
     </div>;
   }
-}
-
-function renderDetail(
-  color: Color,
-  detail: MoveStat["detail"],
-): preact.JSX.Element {
-  if (detail === null) {
-    return <></>;
-  }
-
-  const counts = new Map<string, number>();
-
-  return <>
-    {detail.map(({ result, externalId }, i): preact.JSX.Element => {
-      const sidedResult = color === "black" ? result : 1 - result;
-
-      const renderColor = sidedResult === 0
-        ? "red"
-        : sidedResult === 1
-        ? "green"
-        : "black";
-
-      return <>
-        {i === 0 ? "" : ", "}
-        <span style={{ color: renderColor }}>{externalId}</span>
-      </>;
-    })}
-  </>;
 }
 
 type GhostStone = (

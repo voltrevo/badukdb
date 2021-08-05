@@ -40,13 +40,17 @@ function MetadataFromOGS(ogs: RawGameRecord["ogs"]) {
     players: {
       black: {
         externalId: `ogs:player:${blackId}`,
-        username: ogs.players.black.username,
-        rank: ogs.players.black.ranking,
+        username: ogs.historical_ratings.black.username,
+        rank: RankFromRating(
+          ogs.historical_ratings.black.ratings.overall.rating,
+        ),
       },
       white: {
         externalId: `ogs:player:${whiteId}`,
         username: ogs.players.white.username,
-        rank: ogs.players.white.ranking,
+        rank: RankFromRating(
+          ogs.historical_ratings.white.ratings.overall.rating,
+        ),
       },
     },
     outcome: (() => {
@@ -172,6 +176,10 @@ function Location(sgfLocation: string) {
   const [x, y] = [...sgfLocation].map((c) => alphabet.indexOf(c) + 1);
 
   return { x, y };
+}
+
+function RankFromRating(rating: number) {
+  return Math.log(rating / 525) * 23.15;
 }
 
 export default SimpleGameData;

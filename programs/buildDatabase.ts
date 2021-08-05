@@ -5,6 +5,7 @@ import RawGameRecords from "../backend/RawGameRecords.ts";
 import SimpleGameData from "../common/SimpleGameData.ts";
 import SQLiteDatabase from "../backend/SQLiteDatabase.ts";
 import dataDir from "../backend/dataDir.ts";
+import externalBotIds from "../backend/externalBotIds.ts";
 
 const filePath = `${dataDir}/db${Date.now()}.sqlite`;
 const db = new SQLiteDatabase(filePath);
@@ -12,6 +13,18 @@ let count = 0;
 let totalCount = 0;
 let reports = 0;
 const startTime = performance.now();
+
+const excludeBots = true;
+
+// Exclude players without an accurate rank. For new players this value is 350
+// but it comes down quickly and most regular players are around 60.
+const maxEloStdev = 100;
+
+const filterOnRank = true;
+const rankFilterCenter = 22; // 8kyu
+const rankFilterWidth = 3; // +/- 1.5
+
+const liveOnly = true; // Not correspondence
 
 for await (const raw of RawGameRecords()) {
   totalCount++;
@@ -31,6 +44,16 @@ for await (const raw of RawGameRecords()) {
   if (game.outcome === null) {
     Deno.stdout.write(new TextEncoder().encode("n"));
     continue;
+  }
+
+  if (excludeBots) {
+    if (
+      externalBotIds.includes(game.players.black.externalId) ||
+      externalBotIds.includes(game.players.white.externalId)
+    ) {
+      Deno.stdout.write(new TextEncoder().encode("b"));
+      continue;
+    }
   }
 
   // if (`${game.height}x${game.width}` !== "19x19") {

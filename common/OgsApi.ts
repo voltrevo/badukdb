@@ -143,6 +143,24 @@ namespace OgsApi {
     }),
   );
 
+  export const HistoricalPlayer = tb.Object({
+    id: tb.number,
+    ratings: tb.Object({
+      version: tb.number,
+      overall: tb.Object({
+        rating: tb.number,
+        deviation: tb.number,
+        volatility: tb.number,
+      }),
+    }),
+    username: tb.string,
+    country: tb.string,
+    ranking: tb.number, // This is actually LATEST ranking, not historical
+    professional: tb.boolean,
+    icon: tb.string,
+    ui_class: tb.string,
+  });
+
   export const Game = tb.Object({
     // related: tb.Object({
     //   detail: tb.string,
@@ -166,6 +184,10 @@ namespace OgsApi {
     annulled: tb.boolean,
     started: tb.string,
     ended: tb.Optional(tb.string),
+    historical_ratings: tb.Object({
+      black: HistoricalPlayer,
+      white: HistoricalPlayer,
+    }),
   });
 
   export type Game = tb.TypeOf<typeof Game>;

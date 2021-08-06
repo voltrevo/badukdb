@@ -18,7 +18,7 @@ export const MoveStat = tb.Object({
   count: tb.number,
   detail: tb.Optional(tb.Array(tb.Object({
     result: tb.number,
-    externalId: tb.string,
+    playerDisplay: tb.string,
   }))),
 });
 

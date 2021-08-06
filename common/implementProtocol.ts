@@ -11,7 +11,7 @@ type MoveStatEntry = {
   count: number;
   detail: {
     result: number;
-    externalId: string;
+    playerDisplay: string;
   }[];
 };
 
@@ -70,14 +70,10 @@ export default function implementProtocol(
         entry.result += move.gameResult;
         entry.count++;
 
-        const player = await db.lookupPlayer(move.player);
-
-        if (player) {
-          entry.detail.push({
-            result: move.gameResult,
-            externalId: player.externalId,
-          });
-        }
+        entry.detail.push({
+          result: move.gameResult,
+          playerDisplay: move.playerDisplay,
+        });
 
         moveMap.set(key, entry);
       }

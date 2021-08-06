@@ -49,6 +49,7 @@ export type Move = {
   location: Location | null;
   color: Color;
   player: PlayerId;
+  playerDisplay: string;
   gameResult: number;
 };
 

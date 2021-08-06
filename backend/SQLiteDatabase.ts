@@ -58,6 +58,7 @@ function createTablesIfNotExisting(db: sqlite.DB) {
       locationY INTEGER,
       color INTEGER NOT NULL,
       player BLOB NOT NULL,
+      playerDisplay Text NOT NULL,
       gameResult REAL NOT NULL,
       PRIMARY KEY (game, number)
     );
@@ -119,9 +120,9 @@ function Queries(db: sqlite.DB) {
 
     insertMove: db.prepareQuery(`
       INSERT INTO moves (
-        game, number, board, locationX, locationY, color, player, gameResult
+        game, number, board, locationX, locationY, color, player, playerDisplay, gameResult
       ) VALUES (
-        :game, :number, :board, :locationX, :locationY, :color, :player, :gameResult
+        :game, :number, :board, :locationX, :locationY, :color, :player, :playerDisplay, :gameResult
       )
     `),
 
@@ -277,6 +278,7 @@ export default class SQLiteDatabase implements IDatabase {
       ":locationY": move.location?.y ?? null,
       ":color": move.color,
       ":player": move.player.value.value,
+      ":playerDisplay": move.playerDisplay,
       ":gameResult": move.gameResult,
     });
 
@@ -302,7 +304,8 @@ export default class SQLiteDatabase implements IDatabase {
       location: row[3] === null ? null : { x: row[3], y: row[4] },
       color: row[5] === 0 ? "black" : "white",
       player: PlayerId(Id(row[6])),
-      gameResult: row[7],
+      playerDisplay: row[7],
+      gameResult: row[8],
     };
   }
 
@@ -360,7 +363,8 @@ export default class SQLiteDatabase implements IDatabase {
         location: row[3] === null ? null : { x: row[3], y: row[4] },
         color: row[5] === "black" ? "black" as const : "white" as const,
         player: PlayerId(Id(row[6])),
-        gameResult: row[7],
+        playerDisplay: row[7],
+        gameResult: row[8],
       };
     }
   }

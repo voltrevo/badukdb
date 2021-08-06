@@ -52,7 +52,7 @@ function renderDetail(
   }
 
   return <>
-    {detail.map(({ result, externalId }, i): preact.JSX.Element => {
+    {detail.map(({ result, playerDisplay }, i): preact.JSX.Element => {
       const sidedResult = color === "black" ? result : 1 - result;
 
       const renderColor = sidedResult === 0
@@ -63,7 +63,7 @@ function renderDetail(
 
       return <>
         {i === 0 ? "" : ", "}
-        <span style={{ color: renderColor }}>{externalId}</span>
+        <span style={{ color: renderColor }}>{playerDisplay}</span>
       </>;
     })}
   </>;

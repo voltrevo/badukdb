@@ -1,4 +1,4 @@
-import BoardClass from "./BoardClass.ts";
+import BoardClass, { Color } from "./BoardClass.ts";
 import { canonicalizeMoves } from "./canonicalization.ts";
 import { GameId, Move, Player, PlayerId } from "./entities.ts";
 import assert from "./helpers/assert.ts";
@@ -48,6 +48,7 @@ export default async function addGameToDatabase(
       location: gameMove.location,
       color: gameMove.color,
       player: gameMove.color === "black" ? blackPlayer.id : whitePlayer.id,
+      playerDisplay: PlayerDisplay(game.players[gameMove.color]),
       gameResult: game.outcome.winner === "black" ? 1 : 0,
     };
 
@@ -83,4 +84,15 @@ async function ensurePlayer(
   }
 
   return player;
+}
+
+function PlayerDisplay(player: SimpleGameData["players"][Color]) {
+  const kyuRank = 30 - player.rank;
+  const danRank = player.rank - 29;
+
+  const rankStr = kyuRank > 0
+    ? `${Math.ceil(kyuRank)}k`
+    : `${Math.floor(danRank)}d`;
+
+  return `${player.username} [${rankStr}]`;
 }

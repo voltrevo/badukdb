@@ -1,6 +1,11 @@
 import { serveHttp, tb, ws } from "./deps.ts";
 
-import { apiPort, databasesDirname } from "../common/constants.ts";
+import {
+  apiPort,
+  databasesDirname,
+  minimumDbCount,
+} from "../common/constants.ts";
+
 import dataDir from "./dataDir.ts";
 import SQLiteDatabase from "./SQLiteDatabase.ts";
 import implementProtocol from "../common/implementProtocol.ts";
@@ -17,7 +22,7 @@ export default async function serve() {
   const index = tb.JSON.parse(
     tb.Array(DbMetadata),
     await Deno.readTextFile(indexPath),
-  );
+  ).filter((metadata) => metadata.count >= minimumDbCount);
 
   const dbMap = new Map(index.map(
     ({ name, count, start, filename }) => [

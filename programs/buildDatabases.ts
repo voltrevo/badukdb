@@ -2,8 +2,6 @@
 
 import * as fs from "https://deno.land/std@0.103.0/fs/mod.ts";
 
-import { tb } from "../backend/deps.ts";
-
 import addGameToDatabase from "../common/addGameToDatabase.ts";
 import RawGameRecords from "../backend/RawGameRecords.ts";
 import SimpleGameData from "../common/SimpleGameData.ts";
@@ -11,19 +9,7 @@ import SQLiteDatabase from "../backend/SQLiteDatabase.ts";
 import dataDir from "../backend/dataDir.ts";
 import externalBotIds from "../backend/externalBotIds.ts";
 import IDatabase from "../common/IDatabase.ts";
-
-const DbMetadata = tb.Object({
-  name: tb.string,
-  count: tb.size,
-  filename: tb.string,
-  start: tb.Object({
-    width: tb.size,
-    height: tb.size,
-    komi: tb.number,
-  }),
-});
-
-type DbMetadata = tb.TypeOf<typeof DbMetadata>;
+import DbMetadata from "../backend/DbMetadata.ts";
 
 type DbAndMeta = {
   db: IDatabase;

@@ -4,7 +4,7 @@ import { BoardHash } from "./entities.ts";
 import { constructHash } from "./Hash.ts";
 import fail from "./helpers/fail.ts";
 import IDatabase, { MoveStat } from "./IDatabase.ts";
-import Protocol from "./Protocol.ts";
+import Protocol, { DbListing } from "./Protocol.ts";
 
 type MoveStatEntry = {
   result: number;
@@ -16,11 +16,29 @@ type MoveStatEntry = {
 };
 
 export default function implementProtocol(
-  db: IDatabase,
+  dbMap: Map<string, { listing: DbListing; db: IDatabase }>,
 ): tb.Implementation<typeof Protocol> {
   return {
-    findMoveStats: async (boardHashRaw) => {
+    listDatabases: async () => {
+      await Promise.resolve();
+
+      return [...dbMap.values()]
+        .map((v) => v.listing)
+        .sort((a, b) => b.count - a.count);
+    },
+    findMoveStats: async (dbName, boardHashRaw) => {
       const startTime = performance.now();
+
+      const db = dbMap.get(dbName)?.db;
+
+      if (db === undefined) {
+        console.warn(`Received request for unknown dbName ${dbName}`);
+
+        return {
+          moveStats: [],
+          processingTime: performance.now() - startTime,
+        };
+      }
 
       const boardHash = BoardHash(constructHash(boardHashRaw));
 

@@ -26,6 +26,9 @@ let totalCount = 0;
 let reports = 0;
 const startTime = performance.now();
 
+let lastReportTime = startTime;
+let lastReportCount = count;
+
 const excludeBots = true;
 
 // Exclude players without an accurate rank. For new players this value is 350
@@ -37,7 +40,7 @@ const maxRankDiff = 3;
 
 const liveOnly = true; // Not correspondence
 
-const sampleRatio = 0.1;
+const sampleRatio = 1;
 const rawGameRecords = RawGameRecords(() => Math.random() < sampleRatio);
 
 for await (const raw of rawGameRecords) {
@@ -53,7 +56,19 @@ for await (const raw of rawGameRecords) {
     continue;
   }
 
-  const game = SimpleGameData(raw);
+  let game;
+
+  try {
+    game = SimpleGameData(raw);
+  } catch (error) {
+    console.error([
+      `\nFailed to derive SimpleGameData from ogs:game:${raw.ogs.id} -`,
+      error.stack,
+      "\n",
+    ].join(" "));
+
+    continue;
+  }
 
   const dbAndMeta = allocate(game);
 
@@ -69,11 +84,25 @@ for await (const raw of rawGameRecords) {
   count++;
 
   if (Math.floor(totalCount / 1000) > reports) {
-    console.log(
-      `\n${performance.now() - startTime}ms: ${count}/${totalCount}\n`,
-    );
+    const now = performance.now();
+
+    const gamesPerSec = 1000 * (count - lastReportCount) /
+      (now - lastReportTime);
+
+    const duration = now - startTime;
+    const min = Math.floor(duration / 60000);
+    const sec = Math.floor((duration - 60000 * min) / 1000);
+
+    console.log([
+      "\n",
+      `${min}m${sec}s: ${count} included (${Math.round(gamesPerSec)}/sec), `,
+      `${totalCount} total`,
+      "\n",
+    ].join(""));
 
     reports++;
+    lastReportTime = now;
+    lastReportCount = count;
   }
 }
 

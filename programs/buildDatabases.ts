@@ -51,7 +51,7 @@ const maxRankDiff = 3;
 
 const liveOnly = true; // Not correspondence
 
-const sampleRatio = 0.05;
+const sampleRatio = 0.1;
 const rawGameRecords = RawGameRecords(() => Math.random() < sampleRatio);
 
 for await (const raw of rawGameRecords) {
@@ -82,8 +82,6 @@ for await (const raw of rawGameRecords) {
   Deno.stdout.write(new TextEncoder().encode("."));
   count++;
 
-  await writeIndex();
-
   if (Math.floor(totalCount / 1000) > reports) {
     console.log(
       `\n${performance.now() - startTime}ms: ${count}/${totalCount}\n`,
@@ -93,6 +91,7 @@ for await (const raw of rawGameRecords) {
   }
 }
 
+await writeIndex();
 console.log(`\nCreated ${dir} with ${count} games`);
 
 function allocate(game: SimpleGameData): DbAndMeta | null {
@@ -141,14 +140,14 @@ function allocate(game: SimpleGameData): DbAndMeta | null {
 
   if (rankBand < 10) {
     const i = 9 - rankBand;
-    rankBandStr = `${i + 1}-${i + 2}k`;
+    rankBandStr = `${3 * i + 1}-${3 * i + 3}k`;
   } else {
     const i = rankBand - 10;
-    rankBandStr = `${i + 1}-${i + 2}d`;
+    rankBandStr = `${3 * i + 1}-${3 * i + 3}d`;
   }
 
   const sizeStr = `${game.height}x${game.width}`;
-  const komiStr = `${game.komi}komi`.replace(".", "p");
+  const komiStr = `${game.komi}komi`.replace(".", "p").replace("-", "neg");
 
   const filebase = [sizeStr, komiStr, rankBandStr.replace("-", "to")].join("-");
   const filename = `${filebase}.sqlite`;
@@ -175,6 +174,8 @@ function allocate(game: SimpleGameData): DbAndMeta | null {
     },
   };
 
+  dbMetamap.set(filename, dbAndMeta);
+
   return dbAndMeta;
 }
 
@@ -182,7 +183,9 @@ async function writeIndex() {
   await Deno.writeFile(
     `${dir}/index.json`,
     new TextEncoder().encode(JSON.stringify(
-      [...dbMetamap.values()].map(({ meta }) => meta),
+      [...dbMetamap.values()]
+        .map(({ meta }) => meta)
+        .sort((a, b) => b.count - a.count),
       null,
       2,
     )),

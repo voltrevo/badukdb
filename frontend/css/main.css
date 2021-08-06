@@ -1,6 +1,8 @@
 body {
   font-family: sans-serif;
   margin: 0;
+  background-color: #222222;
+  color: white;
 }
 
 * {
@@ -47,4 +49,12 @@ body {
 
 .moves-table {
   border-spacing: 0.5em;
+}
+
+.winning-player {
+  color: rgb(57, 165, 140);
+}
+
+.losing-player {
+  color: rgb(208, 97, 132);
 }

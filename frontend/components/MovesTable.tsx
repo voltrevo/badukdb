@@ -55,15 +55,17 @@ function renderDetail(
     {detail.map(({ result, playerDisplay }, i): preact.JSX.Element => {
       const sidedResult = color === "black" ? result : 1 - result;
 
-      const renderColor = sidedResult === 0
-        ? "red"
-        : sidedResult === 1
-        ? "green"
-        : "black";
+      const classes: string[] = [];
+
+      if (sidedResult === 0) {
+        classes.push("losing-player");
+      } else if (sidedResult === 1) {
+        classes.push("winning-player");
+      }
 
       return <>
         {i === 0 ? "" : ", "}
-        <span style={{ color: renderColor }}>{playerDisplay}</span>
+        <span class={classes.join(" ")}>{playerDisplay}</span>
       </>;
     })}
   </>;

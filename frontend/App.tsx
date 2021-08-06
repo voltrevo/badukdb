@@ -1,79 +1,113 @@
 import BoardTree from "../common/BoardTree.ts";
 import { MoveStat } from "../common/IDatabase.ts";
-import Protocol from "../common/Protocol.ts";
+import { DbListing, default as Protocol } from "../common/Protocol.ts";
 import MovesTable from "./components/MovesTable.tsx";
 import { BoundedGoban, preact, preact as React, tb } from "./deps.ts";
 import { default as SignMap, FillSignMap } from "./SignMap.ts";
-
-const width = 9;
-const height = 9;
-const komi = 5.5;
 
 type Props = {
   api: tb.Implementation<typeof Protocol>;
 };
 
-type BaseState = {
-  board: BoardTree;
-  width?: number;
-  height?: number;
+type BoardCalc = {
+  moveStats: MoveStat[];
 };
 
-type State = BaseState & {
-  id: number;
-  moveStats: null | MoveStat[];
+type State = {
+  databases?: DbListing[];
+  selectedDatabase?: DbListing;
+
+  boardId: number;
+  board?: BoardTree;
+  boardCalc?: BoardCalc;
+
+  display: {
+    width: number;
+    height: number;
+  };
 };
+
+function InitialState(): State {
+  return {
+    boardId: 0,
+    display: {
+      width: window.innerWidth * 0.7,
+      height: window.innerHeight - 0.0001,
+    },
+  };
+}
 
 export default class App extends preact.Component<Props, State> {
   resizeListener: (() => void) | null = null;
   keydownListener: ((evt: KeyboardEvent) => void) | null = null;
+  theoState = InitialState();
 
   constructor(props: Props) {
     super(props);
 
-    this.setBaseState({
-      width: window.innerWidth * 0.7,
-      height: window.innerHeight - 0.0001,
-    });
+    this.setState(InitialState());
 
     setTimeout(() => {
-      this.setBaseState({
-        width: window.innerWidth * 0.7,
-        height: window.innerHeight,
+      this.setState({
+        display: {
+          width: window.innerWidth * 0.7,
+          height: window.innerHeight,
+        },
+      });
+    });
+
+    props.api.listDatabases().then((databases) => {
+      const selectedDatabase = databases[0];
+
+      this.setState({
+        databases,
+        selectedDatabase,
+      });
+
+      this.setState({
+        board: new BoardTree(
+          selectedDatabase.start.width,
+          selectedDatabase.start.height,
+          selectedDatabase.start.komi,
+        ),
       });
     });
   }
 
   componentDidMount() {
     this.keydownListener = (evt) => {
+      const board = this.state.board;
+
+      if (board === undefined) {
+        return;
+      }
+
       if (evt.key === "ArrowLeft") {
-        this.setBaseState({
-          board: this.state.board.parent ?? this.state.board,
-        });
+        if (board.parent) {
+          this.setState({ board: board.parent });
+        }
 
         return;
       }
 
       if (evt.key === "ArrowRight") {
-        const moveStat = this.state.moveStats?.[0];
+        const moveStat = this.state.boardCalc?.moveStats?.[0];
 
         if (moveStat) {
-          this.setBaseState({
-            board: this.state.board.playLocation(
+          this.setState({
+            board: board.playLocation(
               moveStat.location,
-              this.state.board.board.data.colorToPlay,
+              board.board.data.colorToPlay,
             ),
           });
 
           return;
         }
 
-        const { children: [child] } = this.state.board;
+        const { children: [child] } = board;
 
         if (child) {
-          this.setBaseState({
-            board: child,
-          });
+          this.setState({ board: child });
         }
 
         return;
@@ -83,9 +117,11 @@ export default class App extends preact.Component<Props, State> {
     window.addEventListener("keydown", this.keydownListener);
 
     this.resizeListener = () => {
-      this.setBaseState({
-        width: window.innerWidth * 0.7,
-        height: window.innerHeight,
+      this.setState({
+        display: {
+          width: window.innerWidth * 0.7,
+          height: window.innerHeight,
+        },
       });
     };
 
@@ -102,42 +138,53 @@ export default class App extends preact.Component<Props, State> {
     }
   }
 
-  setBaseState(baseState: Partial<BaseState>) {
-    const priorState: State = this.state ?? {
-      id: 0,
-      board: new BoardTree(width, height, komi),
-      moveStats: null,
-    };
+  setState(stateUpdates: Partial<State>) {
+    const previousState = this.theoState;
+    const newState = { ...previousState, ...stateUpdates };
 
-    const id = priorState.id + 1;
+    if (
+      newState.selectedDatabase !== previousState.selectedDatabase ||
+      newState.board !== previousState.board
+    ) {
+      const boardId = previousState.boardId + 1;
+      stateUpdates.boardId = boardId;
+      stateUpdates.boardCalc = undefined;
 
-    const state: State = {
-      ...priorState,
-      ...baseState,
-      id,
-    };
-
-    if ("board" in baseState || state.moveStats === null) {
-      state.moveStats = null;
-
-      this.props.api.findMoveStats(state.board.board.Board().hash.value.value)
-        .then(({ moveStats, processingTime }) => {
+      if (newState.board && newState.selectedDatabase) {
+        this.props.api.findMoveStats(
+          newState.selectedDatabase.name,
+          newState.board.board.Board().hash.value.value,
+        ).then(({ processingTime, moveStats }) => {
           console.log({ processingTime });
 
-          if (this.state.id === id) {
-            this.setState({ moveStats });
-          }
+          this.setState({
+            boardCalc: { moveStats },
+          });
         });
+      }
     }
 
-    this.setState(state);
+    this.theoState = newState;
+    super.setState(stateUpdates);
   }
 
   render(): preact.ComponentChild {
+    const { selectedDatabase, board, boardCalc } = this.state;
+
+    if (
+      selectedDatabase === undefined ||
+      board === undefined ||
+      boardCalc === undefined
+    ) {
+      return <>Loading</>;
+    }
+
+    const { width, height } = selectedDatabase.start;
+
     const markerMap = FillSignMap<Marker>(width, height, null);
     const ghostStoneMap = FillSignMap<GhostStone>(width, height, null);
 
-    for (const moveStat of this.state.moveStats ?? []) {
+    for (const moveStat of this.state.boardCalc?.moveStats ?? []) {
       if (moveStat.location === null) {
         continue;
       }
@@ -158,7 +205,7 @@ export default class App extends preact.Component<Props, State> {
       };
     }
 
-    for (const { lastMove } of this.state.board.children) {
+    for (const { lastMove } of board.children ?? []) {
       const location = lastMove?.location;
 
       if (location) {
@@ -172,35 +219,35 @@ export default class App extends preact.Component<Props, State> {
       }
     }
 
-    if (this.state.board.lastMove?.location) {
-      const { x, y } = this.state.board.lastMove.location;
+    if (board.lastMove?.location) {
+      const { x, y } = board.lastMove.location;
       markerMap[y - 1][x - 1] = { type: "point" };
     }
 
     const goban = preact.h(BoundedGoban, {
-      maxWidth: this.state.width ?? 500,
-      maxHeight: this.state.height ?? 500,
-      signMap: SignMap(this.state.board.board),
+      maxWidth: this.state.display.width ?? 500,
+      maxHeight: this.state.display.height ?? 500,
+      signMap: SignMap(board.board),
       ghostStoneMap,
       markerMap,
-      busy: this.state.moveStats === null,
+      busy: !this.state.boardCalc?.moveStats,
       showCoordinates: true,
       onVertexClick: (_evt: unknown, [x, y]: [number, number]) => {
         x++;
         y++;
 
-        this.setBaseState({
-          board: this.state.board.play(
+        this.setState({
+          board: board.play(
             x,
             y,
-            this.state.board.board.data.colorToPlay,
+            board.board.data.colorToPlay,
           ),
         });
       },
     });
 
     return <div
-      class={`${this.state.board.board.data.colorToPlay}-to-play`}
+      class={`${board.board.data.colorToPlay}-to-play`}
       style={{
         width: "100vw",
         height: "100vh",
@@ -228,8 +275,8 @@ export default class App extends preact.Component<Props, State> {
         >
         </iframe>
         <MovesTable
-          moveStats={this.state.moveStats}
-          width={this.state.board.board.data.width}
+          moveStats={this.state.boardCalc?.moveStats ?? []}
+          width={width}
         />
       </div>
     </div>;

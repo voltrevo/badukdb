@@ -9,17 +9,23 @@ import DenoWebSocketBufferIO from "./DenoWebSocketBufferIO.ts";
 import DbMetadata from "./DbMetadata.ts";
 
 export default async function serve() {
-  const databasesDir = `${dataDir}/${databasesDirname}`;
+  const databasesDir = `${dataDir}/databases/${databasesDirname}`;
+
+  const indexPath = `${databasesDir}/index.json`;
+  console.log(`Looking for ${indexPath}`);
 
   const index = tb.JSON.parse(
     tb.Array(DbMetadata),
-    await Deno.readTextFile(`${databasesDir}/index.json`),
+    await Deno.readTextFile(indexPath),
   );
 
   const dbMap = new Map(index.map(
-    ({ name, filename }) => [
+    ({ name, count, start, filename }) => [
       name,
-      new SQLiteDatabase(`${databasesDir}/${filename}`),
+      {
+        listing: { name, count, start },
+        db: new SQLiteDatabase(`${databasesDir}/${filename}`),
+      },
     ],
   ));
 

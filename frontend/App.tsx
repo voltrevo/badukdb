@@ -169,13 +169,9 @@ export default class App extends preact.Component<Props, State> {
   }
 
   render(): preact.ComponentChild {
-    const { selectedDatabase, board, boardCalc } = this.state;
+    const { selectedDatabase, board } = this.state;
 
-    if (
-      selectedDatabase === undefined ||
-      board === undefined ||
-      boardCalc === undefined
-    ) {
+    if (selectedDatabase === undefined || board === undefined) {
       return <>Loading</>;
     }
 

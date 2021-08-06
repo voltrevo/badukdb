@@ -151,6 +151,19 @@ export default class App extends preact.Component<Props, State> {
       stateUpdates.boardCalc = undefined;
 
       if (newState.board && newState.selectedDatabase) {
+        if (
+          JSON.stringify(previousState.selectedDatabase?.start) !==
+            JSON.stringify(newState.selectedDatabase.start)
+        ) {
+          stateUpdates.board = new BoardTree(
+            newState.selectedDatabase.start.width,
+            newState.selectedDatabase.start.height,
+            newState.selectedDatabase.start.komi,
+          );
+
+          newState.board = stateUpdates.board;
+        }
+
         this.props.api.findMoveStats(
           newState.selectedDatabase.name,
           newState.board.board.Board().hash.value.value,
@@ -169,9 +182,13 @@ export default class App extends preact.Component<Props, State> {
   }
 
   render(): preact.ComponentChild {
-    const { selectedDatabase, board } = this.state;
+    const { databases, selectedDatabase, board } = this.state;
 
-    if (selectedDatabase === undefined || board === undefined) {
+    if (
+      databases === undefined ||
+      selectedDatabase === undefined ||
+      board === undefined
+    ) {
       return <>Loading</>;
     }
 
@@ -268,8 +285,22 @@ export default class App extends preact.Component<Props, State> {
           width="170"
           height="30"
           title="GitHub"
+        />
+        <br />
+        {<select
+          style={{ fontSize: "1.2em" }}
+          onChange={(evt) => {
+            const selectEl = evt.target as HTMLSelectElement;
+
+            this.setState({
+              selectedDatabase: databases[selectEl.selectedIndex],
+            });
+          }}
         >
-        </iframe>
+          {databases.map((db) => (
+            <option>{db.name} ({db.count})</option>
+          ))}
+        </select>}
         <MovesTable
           moveStats={this.state.boardCalc?.moveStats ?? []}
           width={width}

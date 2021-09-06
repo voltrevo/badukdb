@@ -17,6 +17,8 @@ type State = {
   databases?: DbListing[];
   selectedDatabase?: DbListing;
 
+  popularMovesOnly: boolean;
+
   boardId: number;
   board?: BoardTree;
   boardCalc?: BoardCalc;
@@ -34,6 +36,7 @@ function InitialState(): State {
       width: window.innerWidth * 0.7,
       height: window.innerHeight - 0.0001,
     },
+    popularMovesOnly: true,
   };
 }
 
@@ -181,6 +184,32 @@ export default class App extends preact.Component<Props, State> {
     super.setState(stateUpdates);
   }
 
+  getFilteredMoveStats() {
+    const moveStats = this.state.boardCalc?.moveStats?.slice() ?? [];
+
+    if (!this.state.popularMovesOnly) {
+      return moveStats;
+    }
+
+    moveStats.sort((a, b) => b.count - a.count);
+
+    const totalCount = moveStats.map((s) => s.count).reduce((a, b) => a + b, 0);
+
+    const filtered: typeof moveStats = [];
+    let filterCount = 0;
+
+    for (const moveStat of moveStats) {
+      if (filterCount >= 0.9 * totalCount) {
+        break;
+      }
+
+      filtered.push(moveStat);
+      filterCount += moveStat.count;
+    }
+
+    return filtered;
+  }
+
   render(): preact.ComponentChild {
     const { databases, selectedDatabase, board } = this.state;
 
@@ -197,7 +226,7 @@ export default class App extends preact.Component<Props, State> {
     const markerMap = FillSignMap<Marker>(width, height, null);
     const ghostStoneMap = FillSignMap<GhostStone>(width, height, null);
 
-    for (const moveStat of this.state.boardCalc?.moveStats ?? []) {
+    for (const moveStat of this.getFilteredMoveStats()) {
       if (moveStat.location === null) {
         continue;
       }
@@ -301,6 +330,18 @@ export default class App extends preact.Component<Props, State> {
             <option>{db.name} ({db.count})</option>
           ))}
         </select>}
+        <div>
+          <input
+            type="checkbox"
+            checked={this.state.popularMovesOnly}
+            onClick={() => {
+              this.setState({
+                popularMovesOnly: !this.state.popularMovesOnly,
+              });
+            }}
+          />
+          Popular moves only
+        </div>
         <MovesTable
           moveStats={this.state.boardCalc?.moveStats ?? []}
           width={width}
